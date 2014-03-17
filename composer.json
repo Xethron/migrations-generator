@@ -1,0 +1,24 @@
+{
+	"name": "xethron/migrations-generator",
+	"description": "Generates Laravel Migrations from an existing database",
+	"keywords": ["migration", "migrations", "generator", "laravel", "artisan"],
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Bernhard Breytenbach",
+			"email": "bernhard@coffeecode.co.za"
+		}
+	],
+	"require": {
+		"php": ">=5.3.0",
+		"illuminate/support": "4.1.*",
+		"way/generators": "2.*",
+		"doctrine/dbal": "~2.4"
+	},
+	"autoload": {
+		"psr-0": {
+			"Xethron\\MigrationsGenerator": "src/"
+		}
+	},
+	"minimum-stability": "stable"
+}
