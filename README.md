@@ -14,6 +14,7 @@ Edit your composer.json file to require `xethron/migrations-generator` and run `
 Next, add the following service provider:
 
 ```
+'Way\Generators\GeneratorsServiceProvider',
 'Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider',
 ```
 
