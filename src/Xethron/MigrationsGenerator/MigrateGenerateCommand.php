@@ -1,6 +1,5 @@
 <?php namespace Xethron\MigrationsGenerator;
 
-use Illuminate\Console\Command;
 use Way\Generators\Commands\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -8,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Way\Generators\Generator;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Compilers\TemplateCompiler;
+
 use Way\Generators\Syntax\DroppedTable;
 
 use Xethron\MigrationsGenerator\Syntax\AddToTable;
