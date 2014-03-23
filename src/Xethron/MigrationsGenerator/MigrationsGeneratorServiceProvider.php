@@ -18,12 +18,12 @@ class MigrationsGeneratorServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app['migration.generate'] = $this->app->share(function($app)
+		$this->app['migration.generate'] = $this->app->share( function( $app )
 		{
-			return $this->app->make('Xethron\MigrationsGenerator\MigrateGenerateCommand');
+			return $this->app->make( 'Xethron\MigrationsGenerator\MigrateGenerateCommand' );
 		});
 
-		$this->commands('migration.generate');
+		$this->commands( 'migration.generate' );
 	}
 
 	/**
@@ -33,7 +33,7 @@ class MigrationsGeneratorServiceProvider extends ServiceProvider {
 	 */
 	public function boot()
 	{
-		$this->package('xethron/migration-from-table');
+		$this->package( 'xethron/migration-from-table' );
 	}
 
 	/**
