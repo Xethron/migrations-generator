@@ -69,9 +69,9 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected $migrations = array();
 
 	/**
-	 * @param Generator $generator
-	 * @param Filesystem $file
-	 * @param TemplateCompiler $compiler
+	 * @param \Way\Generators\ModelGenerator  $generator
+	 * @param \Way\Generators\Filesystem\Filesystem  $file
+	 * @param \Way\Generators\Compilers\TemplateCompiler  $compiler
 	 */
 	public function __construct(
 		Generator $generator,
