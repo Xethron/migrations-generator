@@ -32,6 +32,15 @@ You can also specify the connection name if you are not using your default conne
 
 Run `php artisan help migrate:generate` for a list of options.
 
+## Changelog
+
+Changelog for Laravel Migrations Generator
+
+### 24 March: v1.1.0
+* Ability to add entries into the Migrations Table, so that they won't be run as they already exist.
+* Convert Blobs to Binary fields
+* Minor Code Changes
+
 ## Thank You
 
 Thanks to Jeffrey Way for his amazing Laravel-4-Generators package. This package depends greatly on his work.

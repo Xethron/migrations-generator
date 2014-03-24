@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Way\Generators\Generator;
 use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Compilers\TemplateCompiler;
+use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 
 use Way\Generators\Syntax\DroppedTable;
 
@@ -72,16 +73,19 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	 * @param \Way\Generators\ModelGenerator  $generator
 	 * @param \Way\Generators\Filesystem\Filesystem  $file
 	 * @param \Way\Generators\Compilers\TemplateCompiler  $compiler
+	 * @param \Illuminate\Database\Migrations\MigrationRepositoryInterface  $repository
 	 */
 	public function __construct(
 		Generator $generator,
 		Filesystem $file,
-		TemplateCompiler $compiler
+		TemplateCompiler $compiler,
+		MigrationRepositoryInterface $repository
 	)
 	{
 		$this->generator = $generator;
 		$this->file = $file;
 		$this->compiler = $compiler;
+		$this->repository = $repository;
 
 		parent::__construct( $generator );
 	}
@@ -96,6 +100,22 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		$this->info( 'Using connection: '. $this->option( 'connection' ) ."\n" );
 
 		$this->migrationsGenerator = new MigrationsGenerator( $this->option( 'connection' ) );
+
+		$this->log = $this->askYn( 'Do you want to log these migrations in the migrations table?' );
+
+		if ( $this->log ) {
+			$this->repository->setSource( $this->option( 'connection' ) );
+
+			if ( ! $this->repository->repositoryExists() ) {
+				$options = array('--database' => $this->option( 'connection' ) );
+
+				$this->call('migrate:install', $options);
+			}
+
+			$batch = $this->repository->getNextBatchNumber();
+
+			$this->batch = $this->askNumeric( 'Next Batch Number is: '. $batch .'. We recommend using Batch Number 0 so that it becomes the "first" migration', 0 );
+		}
 
 		if ( $this->argument( 'tables' ) ) {
 			$tables = explode( ',', $this->argument( 'tables' ) );
@@ -123,6 +143,33 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		$this->info( "\nFinished!\n" );
 	}
 
+	protected function askYn( $question ) {
+		$answer = $this->ask( $question .' [Y/n] ');
+		while ( ! in_array( strtolower( $answer ), [ 'y', 'n', 'yes', 'no' ] ) ) {
+			$answer = $this->ask('Please choose ether yes or no. ');
+		}
+		return in_array( strtolower( $answer ), [ 'y', 'yes' ] );
+	}
+
+	protected function askNumeric( $question, $default = null ) {
+		$ask = 'Your answer needs to be a numeric value';
+
+		if ( ! is_null( $default ) ) {
+			$question .= ' [Default: '. $default .'] ';
+			$ask .= ' or blank for default';
+		}
+
+		$answer = $this->ask( $question );
+
+		while ( ! is_numeric( $answer ) and ! ( $answer == '' and ! is_null( $default ) ) ) {
+			$answer = $this->ask( $ask .'. ');
+		}
+		if ( $answer == '' ) {
+			$answer = $default;
+		}
+		return $answer;
+	}
+
 	protected function generate( $method, $tables )
 	{
 		if ( $method == 'create' ) {
@@ -142,7 +189,10 @@ class MigrateGenerateCommand extends GeneratorCommand {
 			$this->fields = $this->migrationsGenerator->{$function}( $table );
 			if ( $this->fields ) {
 				parent::fire();
-				$this->migrations[] = $this->datePrefix . '_' . $this->migrationName;
+				if ( $this->log ) {
+					$file = $this->datePrefix . '_' . $this->migrationName;
+					$this->repository->log($file, $this->batch);
+				}
 			}
 		}
 	}

@@ -20,7 +20,11 @@ class MigrationsGeneratorServiceProvider extends ServiceProvider {
 	{
 		$this->app['migration.generate'] = $this->app->share( function( $app )
 		{
-			return $this->app->make( 'Xethron\MigrationsGenerator\MigrateGenerateCommand' );
+			$generator = $app->make( 'Way\Generators\Generator' );
+			$filesystem = $app->make( 'Way\Generators\Filesystem\Filesystem' );
+			$templateCompiler = $app->make( 'Way\Generators\Compilers\TemplateCompiler' );
+
+			return new MigrateGenerateCommand( $generator, $filesystem, $templateCompiler, $app['migration.repository'] );
 		});
 
 		$this->commands( 'migration.generate' );
