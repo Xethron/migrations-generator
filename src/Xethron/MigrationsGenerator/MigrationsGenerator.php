@@ -14,6 +14,7 @@ class MigrationsGenerator {
 		'smallint' => 'smallInteger',
 		'bigint'   => 'bigInteger',
 		'datetime' => 'dateTime',
+		'blob'     => 'binary',
 	];
 
 	/**
