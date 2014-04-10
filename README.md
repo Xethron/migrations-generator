@@ -1,5 +1,7 @@
 # Laravel Migrations Generator
 
+[![Latest Stable Version](https://poser.pugx.org/xethron/migrations-generator/v/stable.png)](https://packagist.org/packages/xethron/migrations-generator) [![Total Downloads](https://poser.pugx.org/xethron/migrations-generator/downloads.png)](https://packagist.org/packages/xethron/migrations-generator) [![Latest Unstable Version](https://poser.pugx.org/xethron/migrations-generator/v/unstable.png)](https://packagist.org/packages/xethron/migrations-generator) [![License](https://poser.pugx.org/xethron/migrations-generator/license.png)](https://packagist.org/packages/xethron/migrations-generator)
+
 Generate Laravel Migrations from an existing database, including indexes and foreign keys!
 
 ## Install
