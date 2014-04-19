@@ -15,8 +15,7 @@ use Xethron\MigrationsGenerator\Syntax\AddToTable;
 use Xethron\MigrationsGenerator\Syntax\AddForeignKeysToTable;
 use Xethron\MigrationsGenerator\Syntax\RemoveForeignKeysFromTable;
 
-use Config;
-use DB;
+use Illuminate\Config\Repository;
 
 class MigrateGenerateCommand extends GeneratorCommand {
 
@@ -79,13 +78,15 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		Generator $generator,
 		Filesystem $file,
 		TemplateCompiler $compiler,
-		MigrationRepositoryInterface $repository
+		MigrationRepositoryInterface $repository,
+		Repository $config
 	)
 	{
 		$this->generator = $generator;
 		$this->file = $file;
 		$this->compiler = $compiler;
 		$this->repository = $repository;
+		$this->config = $config;
 
 		parent::__construct( $generator );
 	}
@@ -277,7 +278,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected function getOptions()
 	{
 		return [
-			['connection', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.', Config::get( 'database.default' )],
+			['connection', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.', $this->config->get( 'database.default' )],
 			['tables', null, InputOption::VALUE_OPTIONAL, 'A list of Tables you wish to Generate Migrations for separated by a comma: users,posts,comments'],
 			['ignore', null, InputOption::VALUE_OPTIONAL, 'A list of Tables you wish to ignore, separated by a comma: users,posts,comments', array() ],
 			['path', null, InputOption::VALUE_OPTIONAL, 'Where should the file be created?'],
