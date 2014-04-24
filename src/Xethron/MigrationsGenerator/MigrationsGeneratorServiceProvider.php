@@ -18,16 +18,20 @@ class MigrationsGeneratorServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app['migration.generate'] = $this->app->share( function( $app )
-		{
-			$generator = $app->make( 'Way\Generators\Generator' );
-			$filesystem = $app->make( 'Way\Generators\Filesystem\Filesystem' );
-			$templateCompiler = $app->make( 'Way\Generators\Compilers\TemplateCompiler' );
+		$this->app->bind(
+			'migration.generate',
+			$this->app->share(function($app) {
+				return new MigrateGenerateCommand(
+					$app->make('Way\Generators\Generator'),
+					$app->make('Way\Generators\Filesystem\Filesystem'),
+					$app->make('Way\Generators\Compilers\TemplateCompiler'),
+					$app->make('migration.repository'),
+					$app->make('config')
+				);
+			})
+		);
 
-			return new MigrateGenerateCommand( $generator, $filesystem, $templateCompiler, $app['migration.repository'] );
-		});
-
-		$this->commands( 'migration.generate' );
+		$this->commands('migration.generate');
 	}
 
 	/**
