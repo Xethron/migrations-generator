@@ -24,7 +24,9 @@ class MigrationsGenerator {
 
 	public function __construct( $database )
 	{
-		$this->schema = DB::connection( $database )->getDoctrineSchemaManager();
+		$connection = DB::connection( $database )->getDoctrineConnection();
+		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+		$this->schema = $connection->getSchemaManager();
 	}
 
 	public function getTables()
