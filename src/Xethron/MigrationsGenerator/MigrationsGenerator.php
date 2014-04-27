@@ -22,6 +22,19 @@ class MigrationsGenerator {
 	 */
 	protected $schema;
 
+	/**
+	 * @var array
+	 */
+	protected $singleIndexes;
+
+	/**
+	 * @var array
+	 */
+	protected $multipleIndexes;
+
+	/**
+	 * @param string $database
+	 */
 	public function __construct( $database )
 	{
 		$connection = DB::connection( $database )->getDoctrineConnection();
@@ -29,11 +42,19 @@ class MigrationsGenerator {
 		$this->schema = $connection->getSchemaManager();
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getTables()
 	{
 		return $this->schema->listTableNames();
 	}
 
+	/**
+	 * Create array of all the fields for a table
+	 * @param string $table Table Name
+	 * @return array|bool
+	 */
 	public function getFields( $table )
 	{
 		$fields = [];
@@ -145,6 +166,9 @@ class MigrationsGenerator {
 		return $fields;
 	}
 
+	/**
+	 * @param string $table
+	 */
 	protected function setIndexes( $table )
 	{
 		$this->singleIndexes = array();
@@ -158,58 +182,63 @@ class MigrationsGenerator {
 				$columnName = $indexColumns[0];
 
 				if ( $index->isPrimary() ) {
-					$this->singleIndexes[ $columnName ] = ['type' => 'primary', 'name' => null];
-					if ( $index->getName() != 'PRIMARY' ) {
-						$this->singleIndexes[ $columnName ]['name'] = $index->getName();
-					}
+					$this->singleIndexes[ $columnName ] =
+						$this->getIndex('primary', $index->getName(), $table, $indexColumns);
 				} elseif ( $index->isUnique() ) {
-					$this->singleIndexes[ $columnName ] = ['type' => 'unique', 'name' => null];
-					if ( ! $this->isDefaultIndexName( $index->getName(), $table, $columnName, 'unique' ) ) {
-						$this->singleIndexes[ $columnName ]['name'] = $index->getName();
-					}
+					$this->singleIndexes[ $columnName ] =
+						$this->getIndex('unique', $index->getName(), $table, $indexColumns);
 				} elseif ( $index->isSimpleIndex() ) {
-					$this->singleIndexes[ $columnName ] = ['type' => 'index', 'name' => null];
-					if ( ! $this->isDefaultIndexName( $index->getName(), $table, $columnName, 'index' ) ) {
-						$this->singleIndexes[ $columnName ]['name'] = $index->getName();
-					}
+					$this->singleIndexes[ $columnName ] =
+						$this->getIndex('index', $index->getName(), $table, $indexColumns);
 				}
 			} else {
-				$indexArray = [ 'columns' => $indexColumns, 'name' => null ];
-
 				if ( $index->isPrimary() ) {
-					$indexArray['type'] = 'primary';
-					if ( $index->getName() != 'PRIMARY' ) {
-						$indexArray['name'] = $index->getName();
-					}
+					$indexArray = $this->getIndex('primary', $index->getName(), $table, $indexColumns);
 				} elseif ( $index->isUnique() ) {
-					$indexArray['type'] = 'unique';
-					if ( ! $this->isDefaultIndexName( $index->getName(), $table, $indexColumns, 'unique' ) ) {
-						$indexArray['name'] = $index->getName();
-					}
+					$indexArray = $this->getIndex('unique', $index->getName(), $table, $indexColumns);
 				} elseif ( $index->isSimpleIndex() ) {
-					$indexArray['type'] = 'index';
-					if ( ! $this->isDefaultIndexName( $index->getName(), $table, $indexColumns, 'index' ) ) {
-						$indexArray['name'] = $index->getName();
-					}
+					$indexArray = $this->getIndex('index', $index->getName(), $table, $indexColumns);
 				}
+				$indexArray['columns'] = $indexColumns;
 				$this->multipleIndexes[] = (object) $indexArray;
 			}
 		}
 	}
 
+	/**
+	 * @param string $table Table Name
+	 * @param string|array $columns Column Names
+	 * @param string $type Index Type
+	 * @return string
+	 */
 	private function getDefaultIndexName( $table, $columns, $type )
 	{
+		if ($type=='primary') {
+			return 'PRIMARY';
+		}
 		if ( is_array( $columns ) ) {
 			$columns = implode( '_', $columns );
 		}
 		return $table .'_'. $columns .'_'. $type;
 	}
 
+	/**
+	 * @param string       $name    Current Name
+	 * @param string       $table   Table Name
+	 * @param string|array $columns Column Names
+	 * @param string       $type    Index Type
+	 * @return bool
+	 */
 	private function isDefaultIndexName( $name, $table, $columns, $type )
 	{
 		return $name == $this->getDefaultIndexName( $table, $columns, $type );
 	}
 
+	/**
+	 * Get array of foreign keys
+	 * @param string $table Table Name
+	 * @return array|bool
+	 */
 	public function getForeignKeyConstraints( $table )
 	{
 
@@ -230,6 +259,12 @@ class MigrationsGenerator {
 		return $fields;
 	}
 
+	/**
+	 * @param string|array $args
+	 * @param bool         $backticks
+	 * @param string       $quotes
+	 * @return string
+	 */
 	protected function argsToString( $args, $backticks = false, $quotes = '\'' )
 	{
 		$open = $close = $quotes;
@@ -247,6 +282,14 @@ class MigrationsGenerator {
 		return $open . $args . $close;
 	}
 
+	/**
+	 * Get Decorator
+	 * @param string       $function
+	 * @param string|array $args
+	 * @param bool         $backticks
+	 * @param string       $quotes
+	 * @return string
+	 */
 	protected function decorate( $function, $args, $backticks = false, $quotes = '\'' )
 	{
 		if ( ! is_null( $args ) ) {
@@ -255,5 +298,21 @@ class MigrationsGenerator {
 		} else {
 			return $function;
 		}
+	}
+
+	/**
+	 * @param string $type
+	 * @param string $name
+	 * @param string $table
+	 * @param string|array $indexColumns
+	 * @return array
+	 */
+	protected function getIndex($type, $name, $table, $indexColumns)
+	{
+		$index = ['type' => $type, 'name' => null];
+		if (!$this->isDefaultIndexName($name, $table, $indexColumns, $type)) {
+			$index['name'] = $name;
+		}
+		return $index;
 	}
 }

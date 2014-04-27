@@ -15,20 +15,18 @@ use Xethron\MigrationsGenerator\Syntax\AddToTable;
 use Xethron\MigrationsGenerator\Syntax\AddForeignKeysToTable;
 use Xethron\MigrationsGenerator\Syntax\RemoveForeignKeysFromTable;
 
-use Illuminate\Config\Repository;
+use Illuminate\Config\Repository as Config;
 
 class MigrateGenerateCommand extends GeneratorCommand {
 
 	/**
 	 * The console command name.
-	 *
 	 * @var string
 	 */
 	protected $name = 'migrate:generate';
 
 	/**
 	 * The console command description.
-	 *
 	 * @var string
 	 */
 	protected $description = 'Generate a migration from an existing table structure.';
@@ -49,6 +47,16 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected $compiler;
 
 	/**
+	 * @var \Illuminate\Database\Migrations\MigrationRepositoryInterface  $repository
+	 */
+	protected $repository;
+
+	/**
+	 * @var \Illuminate\Config\Repository  $config
+	 */
+	protected $config;
+
+	/**
 	 * @var Xethron\MigrationsGenerator\MigrationsGenerator
 	 */
 	protected $migrationsGenerator;
@@ -56,30 +64,55 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	/**
 	 * Array of Fields to create in a new Migration
 	 * Namely: Columns, Indexes and Foreign Keys
-	 *
 	 * @var array
 	 */
 	protected $fields = array();
 
 	/**
 	 * List of Migrations that has been done
-	 *
 	 * @var array
 	 */
 	protected $migrations = array();
 
 	/**
-	 * @param \Way\Generators\ModelGenerator  $generator
+	 * @var bool
+	 */
+	protected $log = false;
+
+	/**
+	 * @var int
+	 */
+	protected $batch;
+
+	/**
+	 * Filename date prefix (Y_m_d_His)
+	 * @var string
+	 */
+	protected $datePrefix;
+
+	/**
+	 * @var string
+	 */
+	protected $migrationName;
+
+	/**
+	 * @var string
+	 */
+	protected $migrationData;
+
+	/**
+	 * @param \Way\Generators\Generator  $generator
 	 * @param \Way\Generators\Filesystem\Filesystem  $file
 	 * @param \Way\Generators\Compilers\TemplateCompiler  $compiler
 	 * @param \Illuminate\Database\Migrations\MigrationRepositoryInterface  $repository
+	 * @param \Illuminate\Config\Repository  $config
 	 */
 	public function __construct(
 		Generator $generator,
 		Filesystem $file,
 		TemplateCompiler $compiler,
 		MigrationRepositoryInterface $repository,
-		Repository $config
+		Config $config
 	)
 	{
 		$this->generator = $generator;
@@ -99,24 +132,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	public function fire()
 	{
 		$this->info( 'Using connection: '. $this->option( 'connection' ) ."\n" );
-
 		$this->migrationsGenerator = new MigrationsGenerator( $this->option( 'connection' ) );
-
-		$this->log = $this->askYn( 'Do you want to log these migrations in the migrations table?' );
-
-		if ( $this->log ) {
-			$this->repository->setSource( $this->option( 'connection' ) );
-
-			if ( ! $this->repository->repositoryExists() ) {
-				$options = array('--database' => $this->option( 'connection' ) );
-
-				$this->call('migrate:install', $options);
-			}
-
-			$batch = $this->repository->getNextBatchNumber();
-
-			$this->batch = $this->askNumeric( 'Next Batch Number is: '. $batch .'. We recommend using Batch Number 0 so that it becomes the "first" migration', 0 );
-		}
 
 		if ( $this->argument( 'tables' ) ) {
 			$tables = explode( ',', $this->argument( 'tables' ) );
@@ -128,22 +144,34 @@ class MigrateGenerateCommand extends GeneratorCommand {
 
 		$ignore = [ 'migrations' ] + $this->option( 'ignore' );
 		$tables = array_diff( $tables, $ignore );
-
 		$this->info( 'Generating migrations for: '. implode( ', ', $tables ) );
 
+		$this->log = $this->askYn( 'Do you want to log these migrations in the migrations table?' );
+
+		if ( $this->log ) {
+			$this->repository->setSource( $this->option( 'connection' ) );
+			if ( ! $this->repository->repositoryExists() ) {
+				$options = array('--database' => $this->option( 'connection' ) );
+				$this->call('migrate:install', $options);
+			}
+			$batch = $this->repository->getNextBatchNumber();
+			$this->batch = $this->askNumeric( 'Next Batch Number is: '. $batch .'. We recommend using Batch Number 0 so that it becomes the "first" migration', 0 );
+		}
+
+		$this->info( "Setting up Tables and Index Migrations" );
 		$this->datePrefix = date( 'Y_m_d_His' );
-
 		$this->generate( 'create', $tables );
-
-		$this->info( "\nSetting up Foreign Keys\n" );
-
+		$this->info( "\nSetting up Foreign Key Migrations\n" );
 		$this->datePrefix = date( 'Y_m_d_His', strtotime( '+1 second' ) );
-
 		$this->generate( 'foreign_keys', $tables );
-
 		$this->info( "\nFinished!\n" );
 	}
 
+	/**
+	 * Ask for user input: Yes/No
+	 * @param  string $question Question to ask
+	 * @return boolean          Answer from user
+	 */
 	protected function askYn( $question ) {
 		$answer = $this->ask( $question .' [Y/n] ');
 		while ( ! in_array( strtolower( $answer ), [ 'y', 'n', 'yes', 'no' ] ) ) {
@@ -152,6 +180,12 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		return in_array( strtolower( $answer ), [ 'y', 'yes' ] );
 	}
 
+	/**
+	 * Ask user for a Numeric Value, or blank for default
+	 * @param  string    $question Question to ask
+	 * @param  int|float $default  Default Value (optional)
+	 * @return int|float           Answer
+	 */
 	protected function askNumeric( $question, $default = null ) {
 		$ask = 'Your answer needs to be a numeric value';
 
@@ -171,6 +205,14 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		return $answer;
 	}
 
+	/**
+	 * Generate Migrations
+	 *
+	 * @param  string $method Create Tables or Foreign Keys ['create', 'foreign_keys']
+	 * @param  array  $tables List of tables to create migrations for
+	 * @throws MethodNotFoundException
+	 * @return void
+	 */
 	protected function generate( $method, $tables )
 	{
 		if ( $method == 'create' ) {
@@ -201,7 +243,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	/**
 	 * The path where the file will be created
 	 *
-	 * @return mixed
+	 * @return string
 	 */
 	protected function getFileGenerationPath()
 	{

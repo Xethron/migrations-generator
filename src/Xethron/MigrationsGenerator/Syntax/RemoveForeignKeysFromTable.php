@@ -5,6 +5,11 @@ use Way\Generators\Syntax\Table;
 class RemoveForeignKeysFromTable extends Table {
 
 	/**
+	 * @var string
+	 */
+	protected $table;
+
+	/**
 	 * Compile and return string for removing columns
 	 *
 	 * @param $migrationData
