@@ -11,6 +11,7 @@ use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 
 use Way\Generators\Syntax\DroppedTable;
 
+use Xethron\MigrationsGenerator\Generators\SchemaGenerator;
 use Xethron\MigrationsGenerator\Syntax\AddToTable;
 use Xethron\MigrationsGenerator\Syntax\AddForeignKeysToTable;
 use Xethron\MigrationsGenerator\Syntax\RemoveForeignKeysFromTable;
@@ -59,7 +60,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	/**
 	 * @var Xethron\MigrationsGenerator\MigrationsGenerator
 	 */
-	protected $migrationsGenerator;
+	protected $schemaGenerator;
 
 	/**
 	 * Array of Fields to create in a new Migration
@@ -132,14 +133,14 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	public function fire()
 	{
 		$this->info( 'Using connection: '. $this->option( 'connection' ) ."\n" );
-		$this->migrationsGenerator = new MigrationsGenerator( $this->option( 'connection' ) );
+		$this->schemaGenerator = new SchemaGenerator( $this->option( 'connection' ) );
 
 		if ( $this->argument( 'tables' ) ) {
 			$tables = explode( ',', $this->argument( 'tables' ) );
 		} elseif ( $this->option('tables') ) {
 			$tables = explode( ',', $this->option( 'tables' ) );
 		} else {
-			$tables = $this->migrationsGenerator->getTables();
+			$tables = $this->schemaGenerator->getTables();
 		}
 
 		$ignore = [ 'migrations' ] + $this->option( 'ignore' );
@@ -229,7 +230,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		foreach ( $tables as $table ) {
 			$this->migrationName = $prefix .'_'. $table .'_table';
 			$this->migrationData = ['method' => $method, 'table' => $table];
-			$this->fields = $this->migrationsGenerator->{$function}( $table );
+			$this->fields = $this->schemaGenerator->{$function}( $table );
 			if ( $this->fields ) {
 				parent::fire();
 				if ( $this->log ) {
