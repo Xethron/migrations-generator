@@ -9,7 +9,7 @@ class AddForeignKeysToTable extends Table {
 	 *
 	 * @param $migrationData
 	 * @param array $foreignKeys
-	 * @return mixed
+	 * @return string
 	 */
 	public function add($migrationData, array $foreignKeys)
 	{

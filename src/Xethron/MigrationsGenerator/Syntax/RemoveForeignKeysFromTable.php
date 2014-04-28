@@ -14,7 +14,7 @@ class RemoveForeignKeysFromTable extends Table {
 	 *
 	 * @param $migrationData
 	 * @param array $foreignKeys
-	 * @return mixed
+	 * @return string
 	 */
 	public function remove( $migrationData, array $foreignKeys )
 	{

@@ -294,7 +294,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	/**
 	 * Get path to template for generator
 	 *
-	 * @return mixed
+	 * @return string
 	 */
 	protected function getTemplatePath()
 	{

@@ -9,7 +9,7 @@ class AddToTable extends Table {
 	 *
 	 * @param $migrationData
 	 * @param array $fields
-	 * @return mixed
+	 * @return string
 	 */
 	public function add($migrationData, array $fields)
 	{
