@@ -277,11 +277,11 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		$migrationData = $this->migrationData;
 
 		if ( $this->migrationData['method'] == 'create' ) {
-			$up = ( new AddToTable( $this->file, $this->compiler ) )->add( $migrationData, $this->fields );
+			$up = ( new AddToTable( $this->file, $this->compiler ) )->run( $migrationData, $this->fields );
 			$down = ( new DroppedTable )->drop( $migrationData['table'] );
 		} else {
-			$up = ( new AddForeignKeysToTable( $this->file, $this->compiler ) )->add( $migrationData, $this->fields );
-			$down = ( new RemoveForeignKeysFromTable( $this->file, $this->compiler ) )->remove( $migrationData, $this->fields );
+			$up = ( new AddForeignKeysToTable( $this->file, $this->compiler ) )->run( $migrationData, $this->fields );
+			$down = ( new RemoveForeignKeysFromTable( $this->file, $this->compiler ) )->run( $migrationData, $this->fields );
 		}
 
 		return [

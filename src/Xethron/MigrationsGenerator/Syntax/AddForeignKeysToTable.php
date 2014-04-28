@@ -1,50 +1,31 @@
 <?php namespace Xethron\MigrationsGenerator\Syntax;
 
-use Way\Generators\Syntax\Table;
-
+/**
+ * Class AddForeignKeysToTable
+ * @package Xethron\MigrationsGenerator\Syntax
+ */
 class AddForeignKeysToTable extends Table {
 
 	/**
 	 * Add syntax for table addition
 	 *
-	 * @param $migrationData
+	 * @param array $migrationData
 	 * @param array $foreignKeys
 	 * @return string
 	 */
-	public function add($migrationData, array $foreignKeys)
+	public function run(array $migrationData, array $foreignKeys)
 	{
 		$migrationData['method'] = 'table';
-
-		$compiled = $this->compiler->compile($this->getTemplate(), $migrationData);
-
-		return $this->replaceFieldsWith($this->addForeignKeys($foreignKeys), $compiled);
-	}
-
-	/**
-	 * Return string for adding all foreign keys
-	 *
-	 * @param $foreignKeys
-	 * @return array
-	 */
-	protected function addForeignKeys($foreignKeys)
-	{
-		$schema = [];
-
-		foreach($foreignKeys as $foreignKey)
-		{
-			$schema[] = $this->addForeignKey($foreignKey);
-		}
-
-		return $schema;
+		return parent::run($migrationData, $foreignKeys);
 	}
 
 	/**
 	 * Return string for adding a foreign key
 	 *
-	 * @param $foreignKey
+	 * @param array $foreignKey
 	 * @return string
 	 */
-	protected function addForeignKey($foreignKey)
+	protected function getItem(array $foreignKey)
 	{
 		$output = sprintf(
 			"\$table->foreign('%s')->references('%s')->on('%s')",
@@ -52,33 +33,10 @@ class AddForeignKeysToTable extends Table {
 			$foreignKey['references'],
 			$foreignKey['on']
 		);
-
-		if (isset($foreignKey['decorators']))
-		{
+		if (isset($foreignKey['decorators'])) {
 			$output .= $this->addDecorators($foreignKey['decorators']);
 		}
-
 		return $output . ';';
-	}
-
-	/**
-	 * @param $decorators
-	 * @return string
-	 */
-	protected function addDecorators($decorators)
-	{
-		$output = '';
-
-		foreach ($decorators as $decorator) {
-			$output .= sprintf("->%s", $decorator);
-
-			// Do we need to tack on the parens?
-			if (strpos($decorator, '(') === false) {
-				$output .= '()';
-			}
-		}
-
-		return $output;
 	}
 
 }
