@@ -7,19 +7,6 @@
 class AddForeignKeysToTable extends Table {
 
 	/**
-	 * Add syntax for table addition
-	 *
-	 * @param array $migrationData
-	 * @param array $foreignKeys
-	 * @return string
-	 */
-	public function run(array $migrationData, array $foreignKeys)
-	{
-		$migrationData['method'] = 'table';
-		return parent::run($migrationData, $foreignKeys);
-	}
-
-	/**
 	 * Return string for adding a foreign key
 	 *
 	 * @param array $foreignKey

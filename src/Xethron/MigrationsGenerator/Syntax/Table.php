@@ -7,16 +7,20 @@
 abstract class Table extends \Way\Generators\Syntax\Table{
 
 	/**
-	 * @param array $migrationData
+	 * @var string
+	 */
+	protected $table;
+
+	/**
 	 * @param array $fields
+	 * @param string $table
+	 * @param string $method
 	 * @return string
 	 */
-	public function run(array $migrationData, array $fields)
+	public function run(array $fields, $table, $method = 'table')
 	{
-		if ( ! isset($migrationData['method'])) {
-			$migrationData['method'] = 'table';
-		}
-		$compiled = $this->compiler->compile($this->getTemplate(), $migrationData);
+		$this->table = $table;
+		$compiled = $this->compiler->compile($this->getTemplate(), ['table'=>$table,'method'=>$method]);
 		return $this->replaceFieldsWith($this->getItems($fields), $compiled);
 	}
 

@@ -99,7 +99,12 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	/**
 	 * @var string
 	 */
-	protected $migrationData;
+	protected $method;
+
+	/**
+	 * @var string
+	 */
+	protected $table;
 
 	/**
 	 * @param \Way\Generators\Generator  $generator
@@ -229,7 +234,8 @@ class MigrateGenerateCommand extends GeneratorCommand {
 
 		foreach ( $tables as $table ) {
 			$this->migrationName = $prefix .'_'. $table .'_table';
-			$this->migrationData = ['method' => $method, 'table' => $table];
+			$this->method = $method;
+			$this->table = $table;
 			$this->fields = $this->schemaGenerator->{$function}( $table );
 			if ( $this->fields ) {
 				parent::fire();
@@ -271,21 +277,16 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	 */
 	protected function getTemplateData()
 	{
-		$migrationName = $this->migrationName;
-
-		// This will tell us the table name and action that we'll be performing
-		$migrationData = $this->migrationData;
-
-		if ( $this->migrationData['method'] == 'create' ) {
-			$up = ( new AddToTable( $this->file, $this->compiler ) )->run( $migrationData, $this->fields );
-			$down = ( new DroppedTable )->drop( $migrationData['table'] );
+		if ( $this->method == 'create' ) {
+			$up = (new AddToTable($this->file, $this->compiler))->run($this->fields, $this->table, 'create');
+			$down = (new DroppedTable)->drop($this->table);
 		} else {
-			$up = ( new AddForeignKeysToTable( $this->file, $this->compiler ) )->run( $migrationData, $this->fields );
-			$down = ( new RemoveForeignKeysFromTable( $this->file, $this->compiler ) )->run( $migrationData, $this->fields );
+			$up = (new AddForeignKeysToTable($this->file, $this->compiler))->run($this->fields,$this->table);
+			$down = (new RemoveForeignKeysFromTable($this->file, $this->compiler))->run($this->fields,$this->table);
 		}
 
 		return [
-			'CLASS' => ucwords( camel_case( $migrationName ) ),
+			'CLASS' => ucwords(camel_case($this->migrationName)),
 			'UP'    => $up,
 			'DOWN'  => $down
 		];

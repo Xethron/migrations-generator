@@ -7,25 +7,6 @@
 class RemoveForeignKeysFromTable extends Table {
 
 	/**
-	 * @var string
-	 */
-	protected $table;
-
-	/**
-	 * Compile and return string for removing columns
-	 *
-	 * @param array $migrationData
-	 * @param array $foreignKeys
-	 * @return string
-	 */
-	public function run(array $migrationData, array $foreignKeys)
-	{
-		$this->table = $migrationData['table'];
-		$migrationData['method'] = 'table';
-		return parent::run($migrationData, $foreignKeys);
-	}
-
-	/**
 	 * Return string for dropping a foreign key
 	 *
 	 * @param array $foreignKey
