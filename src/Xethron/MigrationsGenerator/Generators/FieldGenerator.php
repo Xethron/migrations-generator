@@ -32,7 +32,7 @@ class FieldGenerator {
 	}
 
 	/**
-	 * @param array $columns
+	 * @param \Doctrine\DBAL\Schema\Column[] $columns
 	 * @param IndexGenerator $indexGenerator
 	 * @return mixed
 	 */

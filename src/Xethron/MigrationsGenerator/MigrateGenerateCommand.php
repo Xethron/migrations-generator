@@ -33,12 +33,12 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected $description = 'Generate a migration from an existing table structure.';
 
 	/**
-	 * @var Way\Generators\Filesystem\Filesystem
+	 * @var \Way\Generators\Filesystem\Filesystem
 	 */
 	protected $file;
 
 	/**
-	 * @var Way\Generators\Compilers\TemplateCompiler
+	 * @var \Way\Generators\Compilers\TemplateCompiler
 	 */
 	protected $compiler;
 
@@ -53,7 +53,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected $config;
 
 	/**
-	 * @var Xethron\MigrationsGenerator\MigrationsGenerator
+	 * @var \Xethron\MigrationsGenerator\Generators\SchemaGenerator
 	 */
 	protected $schemaGenerator;
 
@@ -127,7 +127,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return void
 	 */
 	public function fire()
 	{
