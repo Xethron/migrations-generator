@@ -33,11 +33,6 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected $description = 'Generate a migration from an existing table structure.';
 
 	/**
-	 * @var \Way\Generators\ModelGenerator
-	 */
-	protected $generator;
-
-	/**
 	 * @var Way\Generators\Filesystem\Filesystem
 	 */
 	protected $file;
@@ -121,7 +116,6 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		Config $config
 	)
 	{
-		$this->generator = $generator;
 		$this->file = $file;
 		$this->compiler = $compiler;
 		$this->repository = $repository;
