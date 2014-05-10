@@ -38,9 +38,16 @@ You can also specify the connection name if you are not using your default conne
 
 Run `php artisan help migrate:generate` for a list of options.
 
+Check out Chung Tran's blog post for a quick step by step introduction: [Generate Migrations from an existing database in Laravel 4](http://codingtip.blogspot.com/2014/04/laravel-4-generate-migration-existed-dabase-laravel-4.html)
+
 ## Changelog
 
 Changelog for Laravel Migrations Generator
+
+### 10 May: v1.1.1
+* Fix crash when migrating tables that use enum
+* Added Tests
+* Major refactoring of the code
 
 ### 24 March: v1.1.0
 * Ability to add entries into the Migrations Table, so that they won't be run as they already exist.
@@ -50,6 +57,10 @@ Changelog for Laravel Migrations Generator
 ## Thank You
 
 Thanks to Jeffrey Way for his amazing Laravel-4-Generators package. This package depends greatly on his work.
+
+## Contributors
+
+Bernhard Breytenbach ([@BBreyten](https://twitter.com/BBreyten))
 
 ## License
 
