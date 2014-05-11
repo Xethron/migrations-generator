@@ -1,7 +1,6 @@
 <?php namespace Xethron\MigrationsGenerator\Generators;
 
 use DB;
-use Xethron\MigrationsGenerator\Doctrine;
 
 class SchemaGenerator {
 
