@@ -1,5 +1,7 @@
 <?php namespace Xethron\MigrationsGenerator\Generators;
 
+use DB;
+
 class FieldGenerator {
 
 	/**
@@ -20,15 +22,42 @@ class FieldGenerator {
 	 * @param \Doctrine\DBAL\Schema\AbstractSchemaManager $schema
 	 * @return array|bool
 	 */
-	public function generate( $table, $schema )
+	public function generate( $table, $schema, $database )
 	{
+		$this->database = $database;
 		$columns = $schema->listTableColumns( $table );
 		if ( empty( $columns ) ) return false;
 
 		$indexGenerator = new IndexGenerator( $table, $schema );
 		$fields = $this->getFields($columns, $indexGenerator);
+		foreach ($this->getEnum($table) as $column) {
+			$fields[$column->column_name]['type'] = 'enum';
+			$fields[$column->column_name]['args'] = str_replace('enum(', 'array(', $column->column_type);
+		}
 		$indexes = $this->getMultiFieldIndexes($indexGenerator);
 		return array_merge($fields, $indexes);
+	}
+
+	/**
+	 * Return all enum columns for a given table
+	 * @param string $table
+	 * @return array
+	 */
+	protected function getEnum($table)
+	{
+		try {
+			$result = DB::table('information_schema.columns')
+				->where('table_schema', $this->database)
+				->where('table_name', $table)
+				->where('data_type', 'enum')
+				->get(['column_name','column_type']);
+			if ($result)
+				return $result;
+			else
+				return [];
+		} catch (Exception $e){
+			return [];
+		}
 	}
 
 	/**

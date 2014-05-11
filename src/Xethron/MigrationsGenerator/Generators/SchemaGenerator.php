@@ -20,12 +20,19 @@ class SchemaGenerator {
 	protected $foreignKeyGenerator;
 
 	/**
+	 * @var string
+	 */
+	protected $database;
+
+	/**
 	 * @param string $database
 	 */
 	public function __construct( $database )
 	{
 		$connection = DB::connection( $database )->getDoctrineConnection();
 		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+
+		$this->database = $connection->getDatabase();
 
 		$this->schema = $connection->getSchemaManager();
 		$this->fieldGenerator = new FieldGenerator();
@@ -42,7 +49,7 @@ class SchemaGenerator {
 
 	public function getFields($table)
 	{
-		return $this->fieldGenerator->generate($table, $this->schema);
+		return $this->fieldGenerator->generate($table, $this->schema, $this->database);
 	}
 
 	public function getForeignKeyConstraints($table)
