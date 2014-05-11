@@ -17,6 +17,11 @@ class FieldGenerator {
 	];
 
 	/**
+	 * @var string
+	 */
+	protected $database;
+
+	/**
 	 * Create array of all the fields for a table
 	 * @param string $table Table Name
 	 * @param \Doctrine\DBAL\Schema\AbstractSchemaManager $schema
@@ -55,7 +60,7 @@ class FieldGenerator {
 				return $result;
 			else
 				return [];
-		} catch (Exception $e){
+		} catch (\Exception $e){
 			return [];
 		}
 	}
