@@ -34,11 +34,7 @@ class FieldGenerator {
 		if ( empty( $columns ) ) return false;
 
 		$indexGenerator = new IndexGenerator( $table, $schema );
-		$fields = $this->getFields($columns, $indexGenerator);
-		foreach ($this->getEnum($table) as $column) {
-			$fields[$column->column_name]['type'] = 'enum';
-			$fields[$column->column_name]['args'] = str_replace('enum(', 'array(', $column->column_type);
-		}
+		$fields = $this->setEnum($this->getFields($columns, $indexGenerator), $table);
 		$indexes = $this->getMultiFieldIndexes($indexGenerator);
 		return array_merge($fields, $indexes);
 	}
@@ -63,6 +59,20 @@ class FieldGenerator {
 		} catch (\Exception $e){
 			return [];
 		}
+	}
+
+	/**
+	 * @param $fields
+	 * @param $table
+	 * @return mixed
+	 */
+	protected function setEnum($fields, $table)
+	{
+		foreach ($this->getEnum($table) as $column) {
+			$fields[$column->column_name]['type'] = 'enum';
+			$fields[$column->column_name]['args'] = str_replace('enum(', 'array(', $column->column_type);
+		}
+		return $fields;
 	}
 
 	/**
