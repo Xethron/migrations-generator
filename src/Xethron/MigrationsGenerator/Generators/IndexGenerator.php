@@ -107,4 +107,4 @@ class IndexGenerator {
 		return $this->multiFieldIndexes;
 	}
 
-} 
+}

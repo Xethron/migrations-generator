@@ -25,4 +25,4 @@ class ForeignKeyGenerator {
 		}
 		return $fields;
 	}
-} 
+}
