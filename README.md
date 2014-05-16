@@ -44,6 +44,10 @@ Check out Chung Tran's blog post for a quick step by step introduction: [Generat
 
 Changelog for Laravel Migrations Generator
 
+### 16 May: v1.2.0
+* Now fully supports for enum fields
+* Add support for bit fields as Boolean (Laravel Migration Limitation)
+
 ### 10 May: v1.1.1
 * Fix crash when migrating tables that use enum
 * Added Tests
