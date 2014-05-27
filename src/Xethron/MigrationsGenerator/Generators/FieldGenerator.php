@@ -127,7 +127,9 @@ class FieldGenerator {
 				}
 			} elseif (in_array($type, ['decimal', 'float', 'double'])) {
 				// Precision based numbers
-				$args = $this->getPrecision($column->getPrecision(), $column->getScale());
+				if ($type === 'decimal') {
+					$args = $this->getPrecision($column->getPrecision(), $column->getScale());
+				}
 				if ($column->getUnsigned()) {
 					$decorators[] = 'unsigned';
 				}
