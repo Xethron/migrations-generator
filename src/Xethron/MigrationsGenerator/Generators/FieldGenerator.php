@@ -134,7 +134,7 @@ class FieldGenerator {
 			}
 
 			if ($nullable) $decorators[] = 'nullable';
-			if ($default) $decorators[] = $this->getDefault($default, $type);
+			if ($default !== null) $decorators[] = $this->getDefault($default, $type);
 			if ($index) $decorators[] = $this->decorate($index->type, $index->name, true);
 
 			$field = ['field' => $name, 'type' => $type];
