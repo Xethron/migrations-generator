@@ -20,6 +20,12 @@ class AddForeignKeysToTable extends Table {
 			$foreignKey['references'],
 			$foreignKey['on']
 		);
+		if ($foreignKey['onUpdate']) {
+			$output .= sprintf("->onUpdate('%s')", $foreignKey['onUpdate']);
+		}
+		if ($foreignKey['onDelete']) {
+			$output .= sprintf("->onDelete('%s')", $foreignKey['onDelete']);
+		}
 		if (isset($foreignKey['decorators'])) {
 			$output .= $this->addDecorators($foreignKey['decorators']);
 		}

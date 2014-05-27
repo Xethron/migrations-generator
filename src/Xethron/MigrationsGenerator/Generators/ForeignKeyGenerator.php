@@ -21,6 +21,8 @@ class ForeignKeyGenerator {
 				'field' => $foreignKey->getLocalColumns()[0],
 				'references' => $foreignKey->getForeignColumns()[0],
 				'on' => $foreignKey->getForeignTableName(),
+				'onUpdate' => $foreignKey->hasOption('onUpdate') ? $foreignKey->getOption('onUpdate') : 'RESTRICT',
+				'onDelete' => $foreignKey->hasOption('onDelete') ? $foreignKey->getOption('onDelete') : 'RESTRICT',
 			];
 		}
 		return $fields;
