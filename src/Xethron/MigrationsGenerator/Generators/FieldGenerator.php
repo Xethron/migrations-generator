@@ -133,6 +133,9 @@ class FieldGenerator {
 				}
 			} else {
 				// Probably not a number (string/char)
+				if ($type === 'string' && $column->getFixed()) {
+					$type = 'char';
+				}
 				$args = $this->getLength($length);
 			}
 
