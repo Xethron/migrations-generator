@@ -25,6 +25,7 @@ class FieldGenerator {
 	 * Create array of all the fields for a table
 	 * @param string $table Table Name
 	 * @param \Doctrine\DBAL\Schema\AbstractSchemaManager $schema
+	 * @param string $database
 	 * @return array|bool
 	 */
 	public function generate( $table, $schema, $database )
@@ -62,11 +63,11 @@ class FieldGenerator {
 	}
 
 	/**
-	 * @param $fields
-	 * @param $table
-	 * @return mixed
+	 * @param array $fields
+	 * @param string $table
+	 * @return array
 	 */
-	protected function setEnum($fields, $table)
+	protected function setEnum(array $fields, $table)
 	{
 		foreach ($this->getEnum($table) as $column) {
 			$fields[$column->column_name]['type'] = 'enum';
@@ -78,7 +79,7 @@ class FieldGenerator {
 	/**
 	 * @param \Doctrine\DBAL\Schema\Column[] $columns
 	 * @param IndexGenerator $indexGenerator
-	 * @return mixed
+	 * @return array
 	 */
 	protected function getFields($columns, IndexGenerator $indexGenerator)
 	{
