@@ -1,7 +1,7 @@
 {
 	"name": "xethron/migrations-generator",
 	"description": "Generates Laravel Migrations from an existing database",
-	"keywords": ["migration", "migrations", "generator", "laravel", "artisan"],
+	"keywords": ["laravel", "migration", "generator", "migrations", "artisan"],
 	"license": "MIT",
 	"authors": [
 		{
