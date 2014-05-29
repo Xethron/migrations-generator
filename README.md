@@ -44,6 +44,11 @@ Check out Chung Tran's blog post for a quick step by step introduction: [Generat
 
 Changelog for Laravel Migrations Generator
 
+### 29 May: v1.2.1
+* Fixed problem with char fields showing up as varchar
+* Allow decimal, float, and double to be unsigned
+* Allow cascading on foreign key update/delete
+
 ### 16 May: v1.2.0
 * Now fully supports for enum fields
 * Add support for bit fields as Boolean (Laravel Migration Limitation)
