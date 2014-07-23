@@ -142,8 +142,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 			$tables = $this->schemaGenerator->getTables();
 		}
 
-		$ignore = [ 'migrations' ] + $this->option( 'ignore' );
-		$tables = array_diff( $tables, $ignore );
+		$tables = $this->removeExcludedTables($tables);
 		$this->info( 'Generating migrations for: '. implode( ', ', $tables ) );
 
 		$this->log = $this->askYn( 'Do you want to log these migrations in the migrations table?' );
@@ -318,10 +317,41 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		return [
 			['connection', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.', $this->config->get( 'database.default' )],
 			['tables', null, InputOption::VALUE_OPTIONAL, 'A list of Tables you wish to Generate Migrations for separated by a comma: users,posts,comments'],
-			['ignore', null, InputOption::VALUE_OPTIONAL, 'A list of Tables you wish to ignore, separated by a comma: users,posts,comments', array() ],
+			['ignore', null, InputOption::VALUE_OPTIONAL, 'A list of Tables you wish to ignore, separated by a comma: users,posts,comments' ],
 			['path', null, InputOption::VALUE_OPTIONAL, 'Where should the file be created?'],
 			['templatePath', null, InputOption::VALUE_OPTIONAL, 'The location of the template for this generator'],
 		];
+	}
+
+	/**
+	 * Remove all the tables to exclude from the array of tables
+	 *
+	 * @param $tables
+	 *
+	 * @return array
+	 */
+	protected function removeExcludedTables($tables)
+	{
+		$excludes = $this->getExcludedTables();
+		$tables = array_diff($tables, $excludes);
+
+		return $tables;
+	}
+
+	/**
+	 * Get a list of tables to exclude
+	 *
+	 * @return array
+	 */
+	protected function getExcludedTables()
+	{
+		$excludes = ['migrations'];
+		$ignore = $this->option('ignore');
+		if ( ! empty($ignore)) {
+			return $excludes + explode(',', $ignore);
+		}
+
+		return $excludes;
 	}
 
 }
