@@ -18,6 +18,7 @@ class ForeignKeyGenerator {
 
 		foreach ( $foreignKeys as $foreignKey ) {
 			$fields[] = [
+				'name' => $foreignKey->getName(),
 				'field' => $foreignKey->getLocalColumns()[0],
 				'references' => $foreignKey->getForeignColumns()[0],
 				'on' => $foreignKey->getForeignTableName(),
