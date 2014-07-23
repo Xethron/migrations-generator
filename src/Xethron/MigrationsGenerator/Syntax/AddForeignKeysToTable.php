@@ -15,8 +15,9 @@ class AddForeignKeysToTable extends Table {
 	protected function getItem(array $foreignKey)
 	{
 		$output = sprintf(
-			"\$table->foreign('%s')->references('%s')->on('%s')",
+			"\$table->foreign('%s', '%s')->references('%s')->on('%s')",
 			$foreignKey['field'],
+			$foreignKey['name'],
 			$foreignKey['references'],
 			$foreignKey['on']
 		);

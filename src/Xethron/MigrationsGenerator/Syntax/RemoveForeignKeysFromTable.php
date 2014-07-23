@@ -14,6 +14,6 @@ class RemoveForeignKeysFromTable extends Table {
 	 */
 	protected function getItem(array $foreignKey)
 	{
-		return sprintf( "\$table->dropForeign('%s');", strtolower( $this->table .'_'. $foreignKey['field'] .'_foreign' ) );
+		return sprintf( "\$table->dropForeign('%s');", $foreignKey['name'] );
 	}
 }
