@@ -44,6 +44,11 @@ Check out Chung Tran's blog post for a quick step by step introduction: [Generat
 
 Changelog for Laravel Migrations Generator
 
+### 25 July: v1.2.2
+* Support for Laravel 4.2
+* Support for named foreign keys
+* Fix error with --ignore option
+
 ### 29 May: v1.2.1
 * Fixed problem with char fields showing up as varchar
 * Allow decimal, float, and double to be unsigned
