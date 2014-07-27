@@ -142,7 +142,7 @@ class FieldGenerator {
 
 			if ($nullable) $decorators[] = 'nullable';
 			if ($default !== null) $decorators[] = $this->getDefault($default, $type);
-			if ($index) $decorators[] = $this->decorate($index->type, $index->name, true);
+			if ($index) $decorators[] = $this->decorate($index->type, $index->name);
 
 			$field = ['field' => $name, 'type' => $type];
 			if ($decorators) $field['decorators'] = $decorators;
@@ -177,7 +177,7 @@ class FieldGenerator {
 		} elseif (in_array($type, ['string', 'text']) or !is_numeric($default)) {
 			$default = $this->argsToString($default);
 		}
-		return $this->decorate('default', $default, false, '');
+		return $this->decorate('default', $default, '');
 	}
 
 	/**
@@ -198,39 +198,30 @@ class FieldGenerator {
 
 	/**
 	 * @param string|array $args
-	 * @param bool         $backticks
 	 * @param string       $quotes
 	 * @return string
 	 */
-	protected function argsToString( $args, $backticks = false, $quotes = '\'' )
+	protected function argsToString($args, $quotes = '\'')
 	{
-		$open = $close = $quotes;
-
-		if ( $backticks ) {
-			$open = $open .'`';
-			$close = '`'. $close;
-		}
-
 		if ( is_array( $args ) ) {
-			$seperator = $close .', '. $open;
+			$seperator = $quotes .', '. $quotes;
 			$args = implode( $seperator, $args );
 		}
 
-		return $open . $args . $close;
+		return $quotes . $args . $quotes;
 	}
 
 	/**
 	 * Get Decorator
 	 * @param string       $function
 	 * @param string|array $args
-	 * @param bool         $backticks
 	 * @param string       $quotes
 	 * @return string
 	 */
-	protected function decorate( $function, $args, $backticks = false, $quotes = '\'' )
+	protected function decorate($function, $args, $quotes = '\'')
 	{
 		if ( ! is_null( $args ) ) {
-			$args = $this->argsToString( $args, $backticks, $quotes );
+			$args = $this->argsToString($args, $quotes);
 			return $function . '(' . $args . ')';
 		} else {
 			return $function;
@@ -250,7 +241,7 @@ class FieldGenerator {
 				'type' => $index->type,
 			];
 			if ($index->name) {
-				$indexArray['args'] = $this->argsToString($index->name, true);
+				$indexArray['args'] = $this->argsToString($index->name);
 			}
 			$indexes[] = $indexArray;
 		}
