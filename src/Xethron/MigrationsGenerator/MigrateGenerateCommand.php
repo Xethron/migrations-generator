@@ -132,7 +132,11 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	public function fire()
 	{
 		$this->info( 'Using connection: '. $this->option( 'connection' ) ."\n" );
-		$this->schemaGenerator = new SchemaGenerator( $this->option( 'connection' ) );
+		$this->schemaGenerator = new SchemaGenerator(
+			$this->option('connection'),
+			$this->option('defaultIndexNames'),
+			$this->option('defaultFKNames')
+		);
 
 		if ( $this->argument( 'tables' ) ) {
 			$tables = explode( ',', $this->argument( 'tables' ) );
@@ -315,11 +319,13 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected function getOptions()
 	{
 		return [
-			['connection', null, InputOption::VALUE_OPTIONAL, 'The database connection to use.', $this->config->get( 'database.default' )],
-			['tables', null, InputOption::VALUE_OPTIONAL, 'A list of Tables you wish to Generate Migrations for separated by a comma: users,posts,comments'],
-			['ignore', null, InputOption::VALUE_OPTIONAL, 'A list of Tables you wish to ignore, separated by a comma: users,posts,comments' ],
-			['path', null, InputOption::VALUE_OPTIONAL, 'Where should the file be created?'],
-			['templatePath', null, InputOption::VALUE_OPTIONAL, 'The location of the template for this generator'],
+			['connection', 'c', InputOption::VALUE_OPTIONAL, 'The database connection to use.', $this->config->get( 'database.default' )],
+			['tables', 't', InputOption::VALUE_OPTIONAL, 'A list of Tables you wish to Generate Migrations for separated by a comma: users,posts,comments'],
+			['ignore', 'i', InputOption::VALUE_OPTIONAL, 'A list of Tables you wish to ignore, separated by a comma: users,posts,comments' ],
+			['path', 'p', InputOption::VALUE_OPTIONAL, 'Where should the file be created?'],
+			['templatePath', 'tp', InputOption::VALUE_OPTIONAL, 'The location of the template for this generator'],
+			['defaultIndexNames', null, InputOption::VALUE_NONE, 'Don\'t use db index names for migrations'],
+			['defaultFKNames', null, InputOption::VALUE_NONE, 'Don\'t use db foreign key names for migrations'],
 		];
 	}
 

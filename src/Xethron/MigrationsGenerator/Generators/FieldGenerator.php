@@ -23,18 +23,21 @@ class FieldGenerator {
 
 	/**
 	 * Create array of all the fields for a table
-	 * @param string $table Table Name
+	 *
+	 * @param string                                      $table Table Name
 	 * @param \Doctrine\DBAL\Schema\AbstractSchemaManager $schema
-	 * @param string $database
+	 * @param string                                      $database
+	 * @param bool                                        $ignoreIndexNames
+	 *
 	 * @return array|bool
 	 */
-	public function generate( $table, $schema, $database )
+	public function generate($table, $schema, $database, $ignoreIndexNames)
 	{
 		$this->database = $database;
 		$columns = $schema->listTableColumns( $table );
 		if ( empty( $columns ) ) return false;
 
-		$indexGenerator = new IndexGenerator( $table, $schema );
+		$indexGenerator = new IndexGenerator($table, $schema, $ignoreIndexNames);
 		$fields = $this->setEnum($this->getFields($columns, $indexGenerator), $table);
 		$indexes = $this->getMultiFieldIndexes($indexGenerator);
 		return array_merge($fields, $indexes);

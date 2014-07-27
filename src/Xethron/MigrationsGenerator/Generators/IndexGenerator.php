@@ -14,13 +14,20 @@ class IndexGenerator {
 	protected $multiFieldIndexes;
 
 	/**
-	 * @param string $table Table Name
-	 * @param \Doctrine\DBAL\Schema\AbstractSchemaManager $schema
+	 * @var bool
 	 */
-	public function __construct( $table, $schema )
+	private $ignoreIndexNames;
+
+	/**
+	 * @param string                                      $table Table Name
+	 * @param \Doctrine\DBAL\Schema\AbstractSchemaManager $schema
+	 * @param bool                                        $ignoreIndexNames
+	 */
+	public function __construct($table, $schema, $ignoreIndexNames)
 	{
 		$this->indexes = array();
 		$this->multiFieldIndexes = array();
+		$this->ignoreIndexNames = $ignoreIndexNames;
 
 		$indexes = $schema->listTableIndexes( $table );
 
@@ -51,7 +58,8 @@ class IndexGenerator {
 			$type = 'index';
 		}
 		$array = ['type' => $type, 'name' => null, 'columns' => $index->getColumns()];
-		if (!$this->isDefaultIndexName($table, $index->getName(), $type, $index->getColumns())) {
+
+		if ( ! $this->ignoreIndexNames and ! $this->isDefaultIndexName($table, $index->getName(), $type, $index->getColumns())) {
 			$array['name'] = $index->getName();
 		}
 		return $array;

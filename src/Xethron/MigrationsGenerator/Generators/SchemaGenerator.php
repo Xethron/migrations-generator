@@ -23,13 +23,23 @@ class SchemaGenerator {
 	 * @var string
 	 */
 	protected $database;
+	/**
+	 * @var bool
+	 */
+	private $ignoreIndexNames;
+	/**
+	 * @var bool
+	 */
+	private $ignoreForeignKeyNames;
 
 	/**
 	 * @param string $database
+	 * @param bool   $ignoreIndexNames
+	 * @param bool   $ignoreForeignKeyNames
 	 */
-	public function __construct( $database )
+	public function __construct($database, $ignoreIndexNames, $ignoreForeignKeyNames)
 	{
-		$connection = DB::connection( $database )->getDoctrineConnection();
+		$connection = DB::connection($database)->getDoctrineConnection();
 		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
 		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('bit', 'boolean');
 
@@ -38,6 +48,9 @@ class SchemaGenerator {
 		$this->schema = $connection->getSchemaManager();
 		$this->fieldGenerator = new FieldGenerator();
 		$this->foreignKeyGenerator = new ForeignKeyGenerator();
+
+		$this->ignoreIndexNames = $ignoreIndexNames;
+		$this->ignoreForeignKeyNames = $ignoreForeignKeyNames;
 	}
 
 	/**
@@ -50,12 +63,12 @@ class SchemaGenerator {
 
 	public function getFields($table)
 	{
-		return $this->fieldGenerator->generate($table, $this->schema, $this->database);
+		return $this->fieldGenerator->generate($table, $this->schema, $this->database, $this->ignoreIndexNames);
 	}
 
 	public function getForeignKeyConstraints($table)
 	{
-		return $this->foreignKeyGenerator->generate($table, $this->schema);
+		return $this->foreignKeyGenerator->generate($table, $this->schema, $this->ignoreForeignKeyNames);
 	}
 
 }
