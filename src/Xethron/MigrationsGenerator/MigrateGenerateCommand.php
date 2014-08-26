@@ -149,9 +149,9 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		$tables = $this->removeExcludedTables($tables);
 		$this->info( 'Generating migrations for: '. implode( ', ', $tables ) );
 
-        if (!$this->option( 'no-interaction' )) {
-            $this->log = $this->askYn('Do you want to log these migrations in the migrations table?');
-        }
+		if (!$this->option( 'no-interaction' )) {
+			$this->log = $this->askYn('Do you want to log these migrations in the migrations table?');
+		}
 
 		if ( $this->log ) {
 			$this->repository->setSource( $this->option( 'connection' ) );
