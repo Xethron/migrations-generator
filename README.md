@@ -8,6 +8,17 @@
 
 Generate Laravel Migrations from an existing database, including indexes and foreign keys!
 
+## Laravel 5
+
+Thanks to @jamisonvalenta, you can now generate Migrations in Laravel 5!
+
+For Laravel 5 installations, use version: "dev-l5" as follows:
+```json
+"require-dev": {
+    "xethron/migrations-generator": "dev-l5"
+}
+```
+
 ## Install
 
 Edit your composer.json file to require `xethron/migrations-generator` and run `composer update`
