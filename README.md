@@ -18,6 +18,16 @@ For Laravel 5 installations, use version: "dev-l5" as follows:
     "xethron/migrations-generator": "dev-l5"
 }
 ```
+Also, due to a composer bug, you may need explicitly add the forked `way/generators` repo:
+```json
+"repositories": [
+    {
+        "type": "git",
+        "url": "git@github.com:jamisonvalenta/Laravel-4-Generators.git"
+    }
+]
+```
+For those who use `way/generators`: you will not be able to resolve a package version for both this package and `way/generators`. `composer update` without requiring `way/generators` to generate your migrations. Then remove `xethron/migrations-generator`, add your preferred version, and `composer update` again.  
 
 ## Install
 
