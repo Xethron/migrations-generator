@@ -12,13 +12,14 @@ Generate Laravel Migrations from an existing database, including indexes and for
 
 Thanks to @jamisonvalenta, you can now generate Migrations in Laravel 5!
 
-For Laravel 5 installations, use version: "dev-l5" as follows:
+For Laravel 5 installations, add the specified packages to your `composer.json` 
 ```json
 "require-dev": {
-    "xethron/migrations-generator": "dev-l5"
+    "xethron/migrations-generator": "dev-l5",
+    "way/generators": "dev-feature/laravel-five-stable",
 }
 ```
-Also, due to a composer bug, you may need explicitly add the forked `way/generators` repo:
+You also need to point to the fork of the `way/generators` repo:
 ```json
 "repositories": [
     {
@@ -27,7 +28,7 @@ Also, due to a composer bug, you may need explicitly add the forked `way/generat
     }
 ]
 ```
-For those who use `way/generators`: you will not be able to resolve a package version for both this package and `way/generators`. `composer update` without requiring `way/generators` to generate your migrations. Then remove `xethron/migrations-generator`, add your preferred version, and `composer update` again.  
+Note: `feature/laravel-five-stable` was forked from `way/generators` `3.0.3` and was made Laravel `5.0` ready. 
 
 ## Install
 
