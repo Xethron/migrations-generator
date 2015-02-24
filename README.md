@@ -28,7 +28,7 @@ You also need to point to the fork of the `way/generators` repo:
     }
 ]
 ```
-Note: `feature/laravel-five-stable` was forked from `way/generators` `3.0.3` and was made Laravel `5.0` ready. 
+Note: `feature/laravel-five-stable` was forked from `way/generators` `3.0.3` and was made Laravel `5.0` ready. Jeffrey Way has discontinued support for Laravel 5, so the other `artisan generate:` commands may not have been made `5.0` compatible.  Investigate the `artisan make:` commands for substitutes, contribute to Laravel to extend generation support, or fix it and submit a PR to `jamisonvalenta/feature/laravel-five-stable`.
 
 ## Install
 
@@ -39,7 +39,7 @@ Edit your composer.json file to require `xethron/migrations-generator` and run `
 }
 ```
 
-Next, add the following service provider:
+Next, add the following service providers:
 
 ```
 'Way\Generators\GeneratorsServiceProvider',
