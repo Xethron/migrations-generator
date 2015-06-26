@@ -20,6 +20,11 @@ class FieldGenerator {
 	 * @var string
 	 */
 	protected $database;
+	
+	/**
+	 * @var string
+	 */
+	protected $defaultConnection;
 
 	/**
 	 * Create array of all the fields for a table
@@ -33,6 +38,7 @@ class FieldGenerator {
 	 */
 	public function generate($table, $schema, $database, $ignoreIndexNames)
 	{
+		$this->defaultConnection = DB::getDefaultConnection();
 		$this->database = $database;
 		$columns = $schema->listTableColumns( $table );
 		if ( empty( $columns ) ) return false;
@@ -94,6 +100,7 @@ class FieldGenerator {
 			$default = $column->getDefault();
 			$nullable = (!$column->getNotNull());
 			$index = $indexGenerator->getIndex($name);
+			$this->defaultConnection=='mysql' && $comment = $column->getComment();
 
 			$decorators = null;
 			$args = null;
@@ -146,6 +153,7 @@ class FieldGenerator {
 			if ($nullable) $decorators[] = 'nullable';
 			if ($default !== null) $decorators[] = $this->getDefault($default, $type);
 			if ($index) $decorators[] = $this->decorate($index->type, $index->name);
+			if ($this->defaultConnection=='mysql' && $comment) $decorators[] = "comment('{$comment}')";
 
 			$field = ['field' => $name, 'type' => $type];
 			if ($decorators) $field['decorators'] = $decorators;
