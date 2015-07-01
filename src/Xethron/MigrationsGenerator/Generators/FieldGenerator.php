@@ -45,6 +45,7 @@ class FieldGenerator {
 
 		$indexGenerator = new IndexGenerator($table, $schema, $ignoreIndexNames);
 		$fields = $this->setEnum($this->getFields($columns, $indexGenerator), $table);
+		$fields = $this->getTableProperty($fields,$table);
 		$indexes = $this->getMultiFieldIndexes($indexGenerator);
 		return array_merge($fields, $indexes);
 	}
@@ -81,6 +82,43 @@ class FieldGenerator {
 		foreach ($this->getEnum($table) as $column) {
 			$fields[$column->column_name]['type'] = 'enum';
 			$fields[$column->column_name]['args'] = str_replace('enum(', 'array(', $column->column_type);
+		}
+		return $fields;
+	}
+	
+	/**
+	 * get table property
+	 * 
+	 * @param array $fields
+	 * @param string $table
+	 * @return array
+	 */
+	protected function getTableProperty(array $fields, $table){
+		try {
+			$result = DB::table('information_schema.tables')
+			->where('table_schema', $this->database)
+			->where('table_name', $table)
+			->where('table_type', 'BASE TABLE')
+			->get(['table_name','engine','table_collation','table_comment']);
+			if ($result){
+				$fields['engine']['field'] = 'engine';
+				$fields['engine']['type'] = 'table';
+				$fields['engine']['value'] = "'".$result[0]->engine."'";
+				$fields['collation']['field'] = 'collation';
+				$fields['collation']['type'] = 'table';
+				$fields['collation']['value'] = "'".$result[0]->table_collation."'";
+				$fields['comment']['field'] = 'comment';
+				$fields['comment']['type'] = 'table';
+				$fields['comment']['value'] = "'".$result[0]->table_comment."'";
+			}
+			$cha = DB::selectOne('show variables like "character_set_database";');
+			if($cha){
+				$fields['charset']['field'] = 'charset';
+				$fields['charset']['type'] = 'table';
+				$fields['charset']['value'] = "'".$cha->Value."'";
+			}
+		} catch (\Exception $e){
+			
 		}
 		return $fields;
 	}
