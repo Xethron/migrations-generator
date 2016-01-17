@@ -8,29 +8,29 @@
 
 Generate Laravel Migrations from an existing database, including indexes and foreign keys!
 
-## Laravel 5
+## Laravel 5 installation
 
-Thanks to @jamisonvalenta, you can now generate Migrations in Laravel 5!
+The recommended way to install this is through composer:
 
-For Laravel 5 installations, add the specified packages to your `composer.json` 
-```json
-"require-dev": {
-    "xethron/migrations-generator": "dev-l5",
-    "way/generators": "dev-feature/laravel-five-stable",
-}
+```bash
+composer require --dev --no-update "xethron/migrations-generator:dev-l5"
+composer require --dev --no-update "way/generators:dev-feature/laravel-five-stable"
+composer config repositories.repo-name git "git@github.com:jamisonvalenta/Laravel-4-Generators.git"
+composer update
 ```
-You also need to point to the fork of the `way/generators` repo:
-```json
-"repositories": [
-    {
-        "type": "git",
-        "url": "git@github.com:jamisonvalenta/Laravel-4-Generators.git"
-    }
-]
-```
-Note: `feature/laravel-five-stable` was forked from `way/generators` `3.0.3` and was made Laravel `5.0` ready. Jeffrey Way has discontinued support for Laravel 5, so the other `artisan generate:` commands may not have been made `5.0` compatible.  Investigate the `artisan make:` commands for substitutes, contribute to Laravel to extend generation support, or fix it and submit a PR to `jamisonvalenta/feature/laravel-five-stable`.
 
-## Install
+Edit `config/app.php` and add this to providers section:
+
+```php
+Way\Generators\GeneratorsServiceProvider::class,
+Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class,
+```
+
+Notes:
+* Thanks to @jamisonvalenta, you can now generate Migrations in Laravel 5!
+* `feature/laravel-five-stable` was forked from `way/generators` `3.0.3` and was made Laravel `5.0` ready. Jeffrey Way has discontinued support for Laravel 5, so the other `artisan generate:` commands may not have been made `5.0` compatible.  Investigate the `artisan make:` commands for substitutes, contribute to Laravel to extend generation support, or fix it and submit a PR to `jamisonvalenta/feature/laravel-five-stable`.
+
+## Laravel 4 installation
 
 Edit your composer.json file to require `xethron/migrations-generator` and run `composer update`
 ```json
