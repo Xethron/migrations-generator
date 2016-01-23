@@ -16,6 +16,11 @@ The recommended way to install this is through composer:
 composer require --dev --no-update "xethron/migrations-generator:dev-l5"
 composer require --dev --no-update "way/generators:dev-feature/laravel-five-stable"
 composer config repositories.repo-name git "git@github.com:jamisonvalenta/Laravel-4-Generators.git"
+
+Get a token if you don't already have one
+https://github.com/settings/tokens/new?scopes=repo&description=Composer+on+This-PC+YYYY-MM-DD+HHMM
+composer config github-oauth.github.com <add github token>
+
 composer update
 ```
 
