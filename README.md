@@ -13,6 +13,7 @@ Generate Laravel Migrations from an existing database, including indexes and for
 The recommended way to install this is through composer:
 
 Get a token from github if you don't already have one.
+
 https://github.com/settings/tokens/new?scopes=repo&description=Composer+on+This-PC+YYYY-MM-DD+HHMM
 
 ```bash
