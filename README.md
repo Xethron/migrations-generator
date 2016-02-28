@@ -24,6 +24,7 @@ Edit `config/app.php` and add this to providers section:
 ```php
 Way\Generators\GeneratorsServiceProvider::class,
 Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class,
+User11001\EloquentModelGenerator\EloquentModelGeneratorProvider:class,
 ```
 
 Notes:
