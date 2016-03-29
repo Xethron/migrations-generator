@@ -19,6 +19,7 @@ abstract class Table extends \Way\Generators\Syntax\Table{
 	 */
 	public function run(array $fields, $table, $method = 'table')
 	{
+		$table = substr($table, strlen(\DB::getTablePrefix()));
 		$this->table = $table;
 		$compiled = $this->compiler->compile($this->getTemplate(), ['table'=>$table,'method'=>$method]);
 		return $this->replaceFieldsWith($this->getItems($fields), $compiled);
