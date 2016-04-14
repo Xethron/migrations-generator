@@ -254,7 +254,8 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected function getFileGenerationPath()
 	{
 		$path = $this->getPathByOptionOrConfig( 'path', 'migration_target_path' );
-		$fileName = $this->getDatePrefix() . '_' . $this->migrationName . '.php';
+		$migrationName = str_replace('/', '_', $this->migrationName);
+		$fileName = $this->getDatePrefix() . '_' . $migrationName . '.php';
 
 		return "{$path}/{$fileName}";
 	}
