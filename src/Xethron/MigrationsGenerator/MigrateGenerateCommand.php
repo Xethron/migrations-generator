@@ -102,6 +102,11 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected $table;
 
 	/**
+	 * @var string
+	 */
+	protected $tablePrefix;
+
+	/**
 	 * @param \Way\Generators\Generator  $generator
 	 * @param \Way\Generators\Filesystem\Filesystem  $file
 	 * @param \Way\Generators\Compilers\TemplateCompiler  $compiler
@@ -120,8 +125,33 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		$this->compiler = $compiler;
 		$this->repository = $repository;
 		$this->config = $config;
+		$this->tablePrefix = \DB::getTablePrefix();
 
 		parent::__construct( $generator );
+	}
+
+	/**
+	 * Strip out DB table prefix given in app config
+	 * @method tableSansPrefix
+	 * @param  string          $table The table name
+	 * @return string                 Table name stripped of prefix
+	 */
+	private function tableSansPrefix($table = null)
+	{
+		if(! $table) { $table = $this->table; }
+		$oldValue = $table;
+
+		$count = 1;
+
+		$table = str_replace($this->tablePrefix, '', $table, $count);
+
+		if($table !== $oldValue) {
+			$this->line( "Prefix $this->tablePrefix stripped, table name now $table", '', 'v');
+		} else {
+			$this->line( "Leaving unprefixed table $table as is", '', 'v');
+		}
+
+		return $table;
 	}
 
 	/**
@@ -222,20 +252,24 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	{
 		if ( $method == 'create' ) {
 			$function = 'getFields';
-			$prefix = 'create';
+			$cmdPrefix = 'create';
 		} elseif ( $method = 'foreign_keys' ) {
 			$function = 'getForeignKeyConstraints';
-			$prefix = 'add_foreign_keys_to';
+			$cmdPrefix = 'add_foreign_keys_to';
 			$method = 'table';
 		} else {
 			throw new MethodNotFoundException( $method );
 		}
 
 		foreach ( $tables as $table ) {
-			$this->migrationName = $prefix .'_'. $table .'_table';
+			$tableOriginal = $table;
+			$tableSansPrefix = $this->tableSansPrefix($table);
+
+			$this->migrationName = $cmdPrefix .'_'. $tableSansPrefix .'_table';
 			$this->method = $method;
-			$this->table = $table;
-			$this->fields = $this->schemaGenerator->{$function}( $table );
+			$this->table = $tableSansPrefix;
+			$this->fields = $this->schemaGenerator->{$function}( $tableOriginal );
+
 			if ( $this->fields ) {
 				parent::fire();
 				if ( $this->log ) {
@@ -254,7 +288,8 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected function getFileGenerationPath()
 	{
 		$path = $this->getPathByOptionOrConfig( 'path', 'migration_target_path' );
-		$fileName = $this->getDatePrefix() . '_' . $this->migrationName . '.php';
+		$migrationName = str_replace('/', '_', $this->migrationName);
+		$fileName = $this->getDatePrefix() . '_' . $migrationName . '.php';
 
 		return "{$path}/{$fileName}";
 	}
