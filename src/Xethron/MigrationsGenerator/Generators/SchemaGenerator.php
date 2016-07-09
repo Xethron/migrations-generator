@@ -40,6 +40,7 @@ class SchemaGenerator {
 	public function __construct($database, $ignoreIndexNames, $ignoreForeignKeyNames)
 	{
 		$connection = DB::connection($database)->getDoctrineConnection();
+		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('json', 'text');
 		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
 		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('bit', 'boolean');
 
