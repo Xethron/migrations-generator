@@ -12,10 +12,15 @@ Generate Laravel Migrations from an existing database, including indexes and for
 
 The recommended way to install this is through composer:
 
+Get a token from github if you don't already have one.
+
+https://github.com/settings/tokens/new?scopes=repo&description=Composer+on+This-PC+YYYY-MM-DD+HHMM
+
 ```bash
 composer require --dev --no-update "xethron/migrations-generator:dev-l5"
 composer require --dev --no-update "way/generators:dev-feature/laravel-five-stable"
 composer config repositories.repo-name git "git@github.com:jamisonvalenta/Laravel-4-Generators.git"
+composer config github-oauth.github.com <add github token>
 composer update
 ```
 
