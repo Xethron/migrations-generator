@@ -55,7 +55,7 @@ abstract class Table extends \Way\Generators\Syntax\Table{
 		$output = '';
 		foreach ($decorators as $decorator) {
 			$output .= sprintf("->%s", $decorator);
-			// Do we need to tack on the parens?
+			// Do we need to tack on the parentheses?
 			if (strpos($decorator, '(') === false) {
 				$output .= '()';
 			}

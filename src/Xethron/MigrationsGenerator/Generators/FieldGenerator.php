@@ -207,8 +207,8 @@ class FieldGenerator {
 	protected function argsToString($args, $quotes = '\'')
 	{
 		if ( is_array( $args ) ) {
-			$seperator = $quotes .', '. $quotes;
-			$args = implode( $seperator, $args );
+			$separator = $quotes .', '. $quotes;
+			$args = implode( $separator, $args );
 		}
 
 		return $quotes . $args . $quotes;

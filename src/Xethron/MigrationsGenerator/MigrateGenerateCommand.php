@@ -180,7 +180,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected function askYn( $question ) {
 		$answer = $this->ask( $question .' [Y/n] ');
 		while ( ! in_array( strtolower( $answer ), [ 'y', 'n', 'yes', 'no' ] ) ) {
-			$answer = $this->ask('Please choose ether yes or no. ');
+			$answer = $this->ask('Please choose either yes or no. ');
 		}
 		return in_array( strtolower( $answer ), [ 'y', 'yes' ] );
 	}
