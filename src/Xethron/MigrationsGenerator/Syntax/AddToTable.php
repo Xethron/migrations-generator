@@ -45,6 +45,14 @@ class AddToTable extends Table {
 		if (isset($field['decorators'])) {
 			$output .= $this->addDecorators( $field['decorators'] );
 		}
+		//table property
+		if($field['type']=='table'){
+			$output = sprintf(
+			"\$table->%s=%s",
+			$field['field'],
+			$field['value']
+		);
+		}
 		return $output . ';';
 	}
 }

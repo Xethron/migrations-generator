@@ -20,6 +20,11 @@ class FieldGenerator {
 	 * @var string
 	 */
 	protected $database;
+	
+	/**
+	 * @var string
+	 */
+	protected $defaultConnection;
 
 	/**
 	 * Create array of all the fields for a table
@@ -33,12 +38,14 @@ class FieldGenerator {
 	 */
 	public function generate($table, $schema, $database, $ignoreIndexNames)
 	{
+		$this->defaultConnection = DB::getDefaultConnection();
 		$this->database = $database;
 		$columns = $schema->listTableColumns( $table );
 		if ( empty( $columns ) ) return false;
 
 		$indexGenerator = new IndexGenerator($table, $schema, $ignoreIndexNames);
 		$fields = $this->setEnum($this->getFields($columns, $indexGenerator), $table);
+		$fields = $this->getTableProperty($fields,$table);
 		$indexes = $this->getMultiFieldIndexes($indexGenerator);
 		return array_merge($fields, $indexes);
 	}
@@ -78,6 +85,43 @@ class FieldGenerator {
 		}
 		return $fields;
 	}
+	
+	/**
+	 * get table property
+	 * 
+	 * @param array $fields
+	 * @param string $table
+	 * @return array
+	 */
+	protected function getTableProperty(array $fields, $table){
+		try {
+			$result = DB::table('information_schema.tables')
+			->where('table_schema', $this->database)
+			->where('table_name', $table)
+			->where('table_type', 'BASE TABLE')
+			->get(['table_name','engine','table_collation','table_comment']);
+			if ($result){
+				$fields['engine']['field'] = 'engine';
+				$fields['engine']['type'] = 'table';
+				$fields['engine']['value'] = "'".$result[0]->engine."'";
+				$fields['collation']['field'] = 'collation';
+				$fields['collation']['type'] = 'table';
+				$fields['collation']['value'] = "'".$result[0]->table_collation."'";
+				$fields['comment']['field'] = 'comment';
+				$fields['comment']['type'] = 'table';
+				$fields['comment']['value'] = "'".$result[0]->table_comment."'";
+			}
+			$cha = DB::selectOne('show variables like "character_set_database";');
+			if($cha){
+				$fields['charset']['field'] = 'charset';
+				$fields['charset']['type'] = 'table';
+				$fields['charset']['value'] = "'".$cha->Value."'";
+			}
+		} catch (\Exception $e){
+			
+		}
+		return $fields;
+	}
 
 	/**
 	 * @param \Doctrine\DBAL\Schema\Column[] $columns
@@ -94,6 +138,7 @@ class FieldGenerator {
 			$default = $column->getDefault();
 			$nullable = (!$column->getNotNull());
 			$index = $indexGenerator->getIndex($name);
+			$this->defaultConnection=='mysql' && $comment = $column->getComment();
 
 			$decorators = null;
 			$args = null;
@@ -146,6 +191,7 @@ class FieldGenerator {
 			if ($nullable) $decorators[] = 'nullable';
 			if ($default !== null) $decorators[] = $this->getDefault($default, $type);
 			if ($index) $decorators[] = $this->decorate($index->type, $index->name);
+			if ($this->defaultConnection=='mysql' && $comment) $decorators[] = "comment('{$comment}')";
 
 			$field = ['field' => $name, 'type' => $type];
 			if ($decorators) $field['decorators'] = $decorators;
