@@ -211,7 +211,9 @@ class FieldGenerator {
 	{
 		if ( is_array( $args ) ) {
 			$separator = $quotes .', '. $quotes;
-			$args = implode( $separator, $args );
+			$args = implode($separator, str_replace($quotes, '\\'.$quotes, $args));
+		} else {
+			$args = str_replace($quotes, '\\'.$quotes, $args);
 		}
 
 		return $quotes . $args . $quotes;
