@@ -92,6 +92,8 @@ class FieldGenerator {
 			$type = $column->getType()->getName();
 			$length = $column->getLength();
 			$default = $column->getDefault();
+			if (is_bool($default))
+				$default = $default === true ? 1 : 0;
 			$nullable = (!$column->getNotNull());
 			$index = $indexGenerator->getIndex($name);
 
