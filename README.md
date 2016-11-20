@@ -30,16 +30,15 @@ Notes:
 
 ## Laravel 4 installation
 
-Edit your composer.json file to require `xethron/migrations-generator` and run `composer update`
-```json
-"require-dev": {
-    "xethron/migrations-generator": "dev-master"
-}
+Run the following composer command:
+
+```bash
+composer require --dev "xethron/migrations-generator:~1.3.0"
 ```
 
 Next, add the following service providers:
 
-```
+```php
 'Way\Generators\GeneratorsServiceProvider',
 'Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider',
 ```
