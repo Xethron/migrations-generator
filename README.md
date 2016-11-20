@@ -66,6 +66,23 @@ Check out Chung Tran's blog post for a quick step by step introduction: [Generat
 
 Changelog for Laravel Migrations Generator
 
+### 20 November 2016: v2.0.0
+* Support for Laravel 5
+
+### 20 November 2016: v1.3.0
+* Add options --defaultIndexNames and --defaultFKNames to use Laravel's default generated names
+* --no-interaction support
+* Migrate table field comments
+* Add connection to migrations if its not the default
+* Bugfix:
+  * --ignore doesn't ignoring the first table in the list
+  * Remove backticks from index names #17
+  * Drop foreign keys used incorrect key name #34
+  * Remove table prefix from migrations
+  * Escape table names and args
+  * Map JSON columns as text
+  * Boolean default results in empty string
+
 ### 25 July: v1.2.2
 * Support for Laravel 4.2
 * Support for named foreign keys
