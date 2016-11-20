@@ -9,10 +9,9 @@ use Way\Generators\Filesystem\Filesystem;
 use Way\Generators\Compilers\TemplateCompiler;
 use Illuminate\Database\Migrations\MigrationRepositoryInterface;
 
-use Way\Generators\Syntax\DroppedTable;
-
 use Xethron\MigrationsGenerator\Generators\SchemaGenerator;
 use Xethron\MigrationsGenerator\Syntax\AddToTable;
+use Xethron\MigrationsGenerator\Syntax\DroppedTable;
 use Xethron\MigrationsGenerator\Syntax\AddForeignKeysToTable;
 use Xethron\MigrationsGenerator\Syntax\RemoveForeignKeysFromTable;
 
@@ -101,7 +100,12 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	 */
 	protected $table;
 
-	/**
+    /**
+     * @var string|null
+     */
+    protected $connection = null;
+
+    /**
 	 * @param \Way\Generators\Generator  $generator
 	 * @param \Way\Generators\Filesystem\Filesystem  $file
 	 * @param \Way\Generators\Compilers\TemplateCompiler  $compiler
@@ -132,6 +136,9 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	public function fire()
 	{
 		$this->info( 'Using connection: '. $this->option( 'connection' ) ."\n" );
+        if ($this->option('connection') !== $this->config->get('database.default')) {
+            $this->connection = $this->option('connection');
+        }
 		$this->schemaGenerator = new SchemaGenerator(
 			$this->option('connection'),
 			$this->option('defaultIndexNames'),
@@ -277,11 +284,11 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected function getTemplateData()
 	{
 		if ( $this->method == 'create' ) {
-			$up = (new AddToTable($this->file, $this->compiler))->run($this->fields, $this->table, 'create');
-			$down = (new DroppedTable)->drop($this->table);
+			$up = (new AddToTable($this->file, $this->compiler))->run($this->fields, $this->table, $this->connection, 'create');
+			$down = (new DroppedTable)->drop($this->table, $this->connection);
 		} else {
-			$up = (new AddForeignKeysToTable($this->file, $this->compiler))->run($this->fields,$this->table);
-			$down = (new RemoveForeignKeysFromTable($this->file, $this->compiler))->run($this->fields,$this->table);
+			$up = (new AddForeignKeysToTable($this->file, $this->compiler))->run($this->fields,$this->table, $this->connection);
+			$down = (new RemoveForeignKeysFromTable($this->file, $this->compiler))->run($this->fields,$this->table, $this->connection);
 		}
 
 		return [
