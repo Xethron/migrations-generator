@@ -92,6 +92,8 @@ class FieldGenerator {
 			$type = $column->getType()->getName();
 			$length = $column->getLength();
 			$default = $column->getDefault();
+			if (is_bool($default))
+				$default = $default === true ? 1 : 0;
 			$nullable = (!$column->getNotNull());
 			$index = $indexGenerator->getIndex($name);
 			$comment = $column->getComment();
@@ -209,7 +211,9 @@ class FieldGenerator {
 	{
 		if ( is_array( $args ) ) {
 			$separator = $quotes .', '. $quotes;
-			$args = implode( $separator, $args );
+			$args = implode($separator, str_replace($quotes, '\\'.$quotes, $args));
+		} else {
+			$args = str_replace($quotes, '\\'.$quotes, $args);
 		}
 
 		return $quotes . $args . $quotes;
