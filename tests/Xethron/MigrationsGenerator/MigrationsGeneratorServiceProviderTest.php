@@ -21,10 +21,18 @@ class MigrationsGeneratorServiceProviderTest extends PHPUnit_Framework_TestCase 
       ->shouldReceive('bind')
       ->atLeast()->once()
       ->with(
+        'Illuminate\Database\Migrations\MigrationRepositoryInterface',
+        Mockery::any()
+      );
+      
+    $app_mock
+      ->shouldReceive('bind')
+      ->atLeast()->once()
+      ->with(
         'migration.generate',
         Mockery::any()
       );
-
+      
     $app_mock
       ->shouldReceive('share')
       ->atLeast()->once()
@@ -94,21 +102,6 @@ class MigrationsGeneratorServiceProviderTest extends PHPUnit_Framework_TestCase 
       ->atLeast()->once();
 
     $service_provider_mock->register();
-  }
-
-  /**
-  * @test
-  */
-  public function registers_the_package()
-  {
-    $mock = $this->get_service_provider_mock();
-
-    $mock
-      ->shouldReceive('package')
-      ->atLeast()->once()
-      ->with('xethron/migration-from-table');
-
-    $mock->boot();
   }
 
   /**
