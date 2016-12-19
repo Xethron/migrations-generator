@@ -23,6 +23,18 @@ Edit `config/app.php` and add this to providers section:
 Way\Generators\GeneratorsServiceProvider::class,
 Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class,
 ```
+If you want this lib only for dev, you can add the following code to your `app/Providers/AppServiceProvider.php` file, within the `register()` method:
+
+```php
+public function register()
+{
+    if ($this->app->environment() !== 'production') {
+        $this->app->register(\Way\Generators\GeneratorsServiceProvider::class);
+        $this->app->register(\Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class);
+    }
+    // ...
+}
+```
 
 Notes:
 * Thanks to @jamisonvalenta, you can now generate Migrations in Laravel 5!
