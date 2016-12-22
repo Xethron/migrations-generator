@@ -11,16 +11,19 @@ abstract class Table extends \Way\Generators\Syntax\Table{
 	 */
 	protected $table;
 
-	/**
-	 * @param array $fields
-	 * @param string $table
-	 * @param string $method
-	 * @return string
-	 */
-	public function run(array $fields, $table, $method = 'table')
+    /**
+     * @param array  $fields
+     * @param string $table
+     * @param string $method
+     * @param null   $connection
+     *
+     * @return string
+     */
+	public function run(array $fields, $table, $connection = null, $method = 'table')
 	{
 		$table = substr($table, strlen(\DB::getTablePrefix()));
 		$this->table = $table;
+        if (!is_null($connection)) $method = 'connection(\''.$connection.'\')->'.$method;
 		$compiled = $this->compiler->compile($this->getTemplate(), ['table'=>$table,'method'=>$method]);
 		return $this->replaceFieldsWith($this->getItems($fields), $compiled);
 	}
@@ -55,7 +58,7 @@ abstract class Table extends \Way\Generators\Syntax\Table{
 		$output = '';
 		foreach ($decorators as $decorator) {
 			$output .= sprintf("->%s", $decorator);
-			// Do we need to tack on the parens?
+			// Do we need to tack on the parentheses?
 			if (strpos($decorator, '(') === false) {
 				$output .= '()';
 			}

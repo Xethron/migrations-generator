@@ -96,7 +96,7 @@ class FieldGenerator {
 				$default = $default === true ? 1 : 0;
 			$nullable = (!$column->getNotNull());
 			$index = $indexGenerator->getIndex($name);
-
+			$comment = $column->getComment();
 			$decorators = null;
 			$args = null;
 
@@ -148,6 +148,7 @@ class FieldGenerator {
 			if ($nullable) $decorators[] = 'nullable';
 			if ($default !== null) $decorators[] = $this->getDefault($default, $type);
 			if ($index) $decorators[] = $this->decorate($index->type, $index->name);
+			if ($comment) $decorators[] = "comment('" . $comment . "')";
 
 			$field = ['field' => $name, 'type' => $type];
 			if ($decorators) $field['decorators'] = $decorators;
@@ -209,8 +210,10 @@ class FieldGenerator {
 	protected function argsToString($args, $quotes = '\'')
 	{
 		if ( is_array( $args ) ) {
-			$seperator = $quotes .', '. $quotes;
-			$args = implode( $seperator, $args );
+			$separator = $quotes .', '. $quotes;
+			$args = implode($separator, str_replace($quotes, '\\'.$quotes, $args));
+		} else {
+			$args = str_replace($quotes, '\\'.$quotes, $args);
 		}
 
 		return $quotes . $args . $quotes;

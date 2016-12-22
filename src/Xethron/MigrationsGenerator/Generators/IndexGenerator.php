@@ -60,7 +60,8 @@ class IndexGenerator {
 		$array = ['type' => $type, 'name' => null, 'columns' => $index->getColumns()];
 
 		if ( ! $this->ignoreIndexNames and ! $this->isDefaultIndexName($table, $index->getName(), $type, $index->getColumns())) {
-			$array['name'] = $index->getName();
+			// Sent Index name to exclude spaces
+			$array['name'] = str_replace(' ', '', $index->getName());
 		}
 		return $array;
 	}

@@ -13,10 +13,8 @@ Generate Laravel Migrations from an existing database, including indexes and for
 The recommended way to install this is through composer:
 
 ```bash
-composer require --dev --no-update "xethron/migrations-generator:dev-l5"
-composer require --dev --no-update "way/generators:dev-feature/laravel-five-stable"
-composer config repositories.repo-name git "git@github.com:jamisonvalenta/Laravel-4-Generators.git"
-composer update
+composer config repositories.repo-name vcs "https://github.com/jamisonvalenta/Laravel-4-Generators.git"
+composer require --dev "way/generators:dev-feature/laravel-five-stable" "xethron/migrations-generator"
 ```
 
 Edit `config/app.php` and add this to providers section:
@@ -25,6 +23,18 @@ Edit `config/app.php` and add this to providers section:
 Way\Generators\GeneratorsServiceProvider::class,
 Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class,
 ```
+If you want this lib only for dev, you can add the following code to your `app/Providers/AppServiceProvider.php` file, within the `register()` method:
+
+```php
+public function register()
+{
+    if ($this->app->environment() !== 'production') {
+        $this->app->register(\Way\Generators\GeneratorsServiceProvider::class);
+        $this->app->register(\Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class);
+    }
+    // ...
+}
+```
 
 Notes:
 * Thanks to @jamisonvalenta, you can now generate Migrations in Laravel 5!
@@ -32,16 +42,15 @@ Notes:
 
 ## Laravel 4 installation
 
-Edit your composer.json file to require `xethron/migrations-generator` and run `composer update`
-```json
-"require-dev": {
-    "xethron/migrations-generator": "dev-master"
-}
+Run the following composer command:
+
+```bash
+composer require --dev "xethron/migrations-generator:~1.3.0"
 ```
 
 Next, add the following service providers:
 
-```
+```php
 'Way\Generators\GeneratorsServiceProvider',
 'Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider',
 ```
@@ -65,6 +74,23 @@ Check out Chung Tran's blog post for a quick step by step introduction: [Generat
 ## Changelog
 
 Changelog for Laravel Migrations Generator
+
+### 20 November 2016: v2.0.0
+* Support for Laravel 5
+
+### 20 November 2016: v1.3.0
+* Add options --defaultIndexNames and --defaultFKNames to use Laravel's default generated names
+* --no-interaction support
+* Migrate table field comments
+* Add connection to migrations if its not the default
+* Bugfix:
+  * --ignore doesn't ignoring the first table in the list
+  * Remove backticks from index names #17
+  * Drop foreign keys used incorrect key name #34
+  * Remove table prefix from migrations
+  * Escape table names and args
+  * Map JSON columns as text
+  * Boolean default results in empty string
 
 ### 25 July: v1.2.2
 * Support for Laravel 4.2
