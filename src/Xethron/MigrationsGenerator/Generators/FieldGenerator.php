@@ -179,7 +179,8 @@ class FieldGenerator {
 		if (in_array($default, ['CURRENT_TIMESTAMP'])) {
 			if ($type == 'dateTime')
 				$type = 'timestamp';
-			$default = $this->decorate('DB::raw', $default);
+			if ($type != 'boolean')
+				$default = $this->decorate('DB::raw', $default);
 		} elseif (in_array($type, ['string', 'text']) or !is_numeric($default)) {
 			$default = $this->argsToString($default);
 		}
