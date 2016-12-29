@@ -241,7 +241,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		foreach ( $tables as $table ) {
 			$this->migrationName = $prefix .'_'. snake_case(strtolower($table)).'_table';
 			$this->method = $method;
-			$this->table = snake_case(strtolower($table));
+			$this->table = strtolower($table);
 			$this->fields = $this->schemaGenerator->{$function}( $table );
 			if ( $this->fields ) {
 				parent::fire();
