@@ -176,7 +176,7 @@ class FieldGenerator {
 	 */
 	protected function getDefault($default, &$type)
 	{
-		if (in_array($default, ['CURRENT_TIMESTAMP'])) {
+		if (in_array($default, ['CURRENT_TIMESTAMP'], true)) {
 			if ($type == 'dateTime')
 				$type = 'timestamp';
 			$default = $this->decorate('DB::raw', $default);
