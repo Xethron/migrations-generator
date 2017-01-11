@@ -231,6 +231,8 @@ class MigrateGenerateCommand extends GeneratorCommand {
 			$this->table = $table;
 			$this->migrationName = 'create_'. $this->table .'_table';
 			$this->fields = $this->schemaGenerator->getFields( $this->table );
+			
+			$this->generate();
 		}
 	}
 
