@@ -41,6 +41,7 @@ class SchemaGenerator {
 	{
 		$connection = DB::connection($database)->getDoctrineConnection();
 		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('json', 'text');
+		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('jsonb', 'text');
 		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
 		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('bit', 'boolean');
 
