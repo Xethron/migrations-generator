@@ -18,9 +18,8 @@ class MigrationsGeneratorServiceProvider extends ServiceProvider {
 	 */
 	public function register()
 	{
-		$this->app->bind(
-			'migration.generate',
-			$this->app->share(function($app) {
+        $this->app->singleton(
+            'migration.generate', function($app) {
 				return new MigrateGenerateCommand(
 					$app->make('Way\Generators\Generator'),
 					$app->make('Way\Generators\Filesystem\Filesystem'),
@@ -28,7 +27,7 @@ class MigrationsGeneratorServiceProvider extends ServiceProvider {
 					$app->make('migration.repository'),
 					$app->make('config')
 				);
-			})
+			}
 		);
 
 		$this->commands('migration.generate');
