@@ -17,8 +17,7 @@ Please note that the Laravel 4 Generator edits have been moved to `https://githu
 The recommended way to install this is through composer:
 
 ```bash
-composer config repositories.repo-name vcs "https://github.com/xethron/Laravel-4-Generators.git"
-composer require --dev "way/generators" "xethron/migrations-generator"
+composer require --dev "xethron/migrations-generator"
 ```
 
 Edit `config/app.php` and add this to providers section:

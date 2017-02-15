@@ -12,15 +12,9 @@
 	"require": {
 		"php": ">=5.4.0",
 		"illuminate/support": ">=4.1",
-		"way/generators": "~3.1.0",
+		"xethron/laravel-4-generators": "~3.1.0",
 		"doctrine/dbal": "~2.4"
 	},
-	"repositories": [
-		{
-			"type": "git",
-			"url": "git@github.com:xethron/Laravel-4-Generators.git"
-		}
-	],
 	"autoload": {
 		"psr-0": {
 			"Xethron\\MigrationsGenerator": "src/"
