@@ -230,7 +230,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		if ( $method == 'create' ) {
 			$function = 'getFields';
 			$prefix = 'create';
-		} elseif ( $method = 'foreign_keys' ) {
+		} elseif ( $method == 'foreign_keys' ) {
 			$function = 'getForeignKeyConstraints';
 			$prefix = 'add_foreign_keys_to';
 			$method = 'table';
