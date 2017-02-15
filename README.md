@@ -25,6 +25,7 @@ Edit `config/app.php` and add this to providers section:
 ```php
 Way\Generators\GeneratorsServiceProvider::class,
 Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class,
+User11001\EloquentModelGenerator\EloquentModelGeneratorProvider:class,
 ```
 If you want this lib only for dev, you can add the following code to your `app/Providers/AppServiceProvider.php` file, within the `register()` method:
 
