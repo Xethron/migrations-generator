@@ -172,10 +172,10 @@ class MigrateGenerateCommand extends GeneratorCommand {
 
 		$this->info( "Setting up Tables and Index Migrations" );
 		$this->datePrefix = date( 'Y_m_d_His' );
-		$this->generate( 'create', $tables );
+		$this->generateTablesAndIndices( $tables );
 		$this->info( "\nSetting up Foreign Key Migrations\n" );
 		$this->datePrefix = date( 'Y_m_d_His', strtotime( '+1 second' ) );
-		$this->generate( 'foreign_keys', $tables );
+		$this->generateForeignKeys( $tables );
 		$this->info( "\nFinished!\n" );
 	}
 
@@ -218,37 +218,56 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	}
 
 	/**
-	 * Generate Migrations
+	 * Generate tables and index migrations.
 	 *
-	 * @param  string $method Create Tables or Foreign Keys ['create', 'foreign_keys']
-	 * @param  array  $tables List of tables to create migrations for
-	 * @throws MethodNotFoundException
+	 * @param  array $tables List of tables to create migrations for
 	 * @return void
 	 */
-	protected function generate( $method, $tables )
+	protected function generateTablesAndIndices( array $tables )
 	{
-		if ( $method == 'create' ) {
-			$function = 'getFields';
-			$prefix = 'create';
-		} elseif ( $method = 'foreign_keys' ) {
-			$function = 'getForeignKeyConstraints';
-			$prefix = 'add_foreign_keys_to';
-			$method = 'table';
-		} else {
-			throw new MethodNotFoundException( $method );
-		}
+		$this->method = 'create';
 
 		foreach ( $tables as $table ) {
-			$this->migrationName = $prefix .'_'. $table .'_table';
-			$this->method = $method;
 			$this->table = $table;
-			$this->fields = $this->schemaGenerator->{$function}( $table );
-			if ( $this->fields ) {
-				parent::fire();
-				if ( $this->log ) {
-					$file = $this->datePrefix . '_' . $this->migrationName;
-					$this->repository->log($file, $this->batch);
-				}
+			$this->migrationName = 'create_'. $this->table .'_table';
+			$this->fields = $this->schemaGenerator->getFields( $this->table );
+			
+			$this->generate();
+		}
+	}
+
+	/**
+	 * Generate foreign key migrations.
+	 *
+	 * @param  array $tables List of tables to create migrations for
+	 * @return void
+	 */
+	protected function generateForeignKeys( array $tables )
+	{
+		$this->method = 'table';
+
+		foreach ( $tables as $table ) {
+			$this->table = $table;
+			$this->migrationName = 'add_foreign_keys_to_'. $this->table .'_table';
+			$this->fields = $this->schemaGenerator->getForeignKeyConstraints( $this->table );
+
+			$this->generate();
+		}
+	}
+
+	/**
+	 * Generate Migration for the current table.
+	 *
+	 * @return void
+	 */
+	protected function generate()
+	{
+		if ( $this->fields ) {
+			parent::fire();
+
+			if ( $this->log ) {
+				$file = $this->datePrefix . '_' . $this->migrationName;
+				$this->repository->log($file, $this->batch);
 			}
 		}
 	}
@@ -287,9 +306,11 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		if ( $this->method == 'create' ) {
 			$up = (new AddToTable($this->file, $this->compiler))->run($this->fields, $this->table, $this->connection, 'create');
 			$down = (new DroppedTable)->drop($this->table, $this->connection);
-		} else {
-			$up = (new AddForeignKeysToTable($this->file, $this->compiler))->run($this->fields,$this->table, $this->connection);
-			$down = (new RemoveForeignKeysFromTable($this->file, $this->compiler))->run($this->fields,$this->table, $this->connection);
+		}
+
+		if ( $this->method == 'table' ) {
+			$up = (new AddForeignKeysToTable($this->file, $this->compiler))->run($this->fields, $this->table, $this->connection);
+			$down = (new RemoveForeignKeysFromTable($this->file, $this->compiler))->run($this->fields, $this->table, $this->connection);
 		}
 
 		return [
@@ -342,11 +363,11 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	/**
 	 * Remove all the tables to exclude from the array of tables
 	 *
-	 * @param $tables
+	 * @param array $tables
 	 *
 	 * @return array
 	 */
-	protected function removeExcludedTables($tables)
+	protected function removeExcludedTables( array $tables )
 	{
 		$excludes = $this->getExcludedTables();
 		$tables = array_diff($tables, $excludes);
