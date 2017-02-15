@@ -58,6 +58,13 @@ Next, add the following service providers:
 'Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider',
 ```
 
+For Laravel 5 using PHP 5.5 ::class property in `app/config.php` add the following service providers:
+
+```
+Way\Generators\GeneratorsServiceProvider::class,
+Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class,
+```
+
 And you're set. To double check if its working, run `php artisan`, and look for the command `migrate:generate`
 
 ## Usage
