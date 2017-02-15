@@ -12,13 +12,13 @@
 	"require": {
 		"php": ">=5.4.0",
 		"illuminate/support": ">=4.1",
-		"way/generators": "dev-feature/laravel-five-stable",
+		"way/generators": "~3.1.0",
 		"doctrine/dbal": "~2.4"
 	},
 	"repositories": [
 		{
 			"type": "git",
-			"url": "git@github.com:jamisonvalenta/Laravel-4-Generators.git"
+			"url": "git@github.com:xethron/Laravel-4-Generators.git"
 		}
 	],
 	"autoload": {

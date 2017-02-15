@@ -18,7 +18,7 @@ The recommended way to install this is through composer:
 
 ```bash
 composer config repositories.repo-name vcs "https://github.com/xethron/Laravel-4-Generators.git"
-composer require --dev "way/generators:dev-master" "xethron/migrations-generator"
+composer require --dev "way/generators" "xethron/migrations-generator"
 ```
 
 Edit `config/app.php` and add this to providers section:
