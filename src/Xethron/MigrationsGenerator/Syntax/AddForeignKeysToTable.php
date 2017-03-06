@@ -14,14 +14,14 @@ class AddForeignKeysToTable extends Table {
 	 */
 	protected function getItem(array $foreignKey)
 	{
-		$value = $foreignKey['field'];
+		$value = $foreignKey['field'][0];
 		if ( ! empty($foreignKey['name'])) {
 			$value .= "', '". $foreignKey['name'];
 		}
 		$output = sprintf(
 			"\$table->foreign('%s')->references('%s')->on('%s')",
 			$value,
-			$foreignKey['references'],
+			$foreignKey['references'][0],
 			$foreignKey['on']
 		);
 		if ($foreignKey['onUpdate']) {

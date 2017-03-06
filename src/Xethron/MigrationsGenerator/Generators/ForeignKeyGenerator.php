@@ -28,8 +28,8 @@ class ForeignKeyGenerator {
 		foreach ( $foreignKeys as $foreignKey ) {
 			$fields[] = [
 				'name' => $this->getName($foreignKey, $ignoreForeignKeyNames),
-				'field' => $foreignKey->getLocalColumns()[0],
-				'references' => $foreignKey->getForeignColumns()[0],
+				'field' => $foreignKey->getLocalColumns(),
+				'references' => $foreignKey->getForeignColumns(),
 				'on' => $foreignKey->getForeignTableName(),
 				'onUpdate' => $foreignKey->hasOption('onUpdate') ? $foreignKey->getOption('onUpdate') : 'RESTRICT',
 				'onDelete' => $foreignKey->hasOption('onDelete') ? $foreignKey->getOption('onDelete') : 'RESTRICT',
