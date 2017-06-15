@@ -15,7 +15,7 @@ use Xethron\MigrationsGenerator\Syntax\DroppedTable;
 use Xethron\MigrationsGenerator\Syntax\AddForeignKeysToTable;
 use Xethron\MigrationsGenerator\Syntax\RemoveForeignKeysFromTable;
 
-use Illuminate\Config\Repository as Config;
+use Illuminate\Contracts\Config\Repository as Config;
 
 class MigrateGenerateCommand extends GeneratorCommand {
 
