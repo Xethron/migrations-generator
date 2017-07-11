@@ -34,10 +34,11 @@ class SchemaGenerator {
 
 	/**
 	 * @param string $database
+     * @param bool   $unusedTimestamps
 	 * @param bool   $ignoreIndexNames
 	 * @param bool   $ignoreForeignKeyNames
 	 */
-	public function __construct($database, $ignoreIndexNames, $ignoreForeignKeyNames)
+	public function __construct($database, $unusedTimestamps, $ignoreIndexNames, $ignoreForeignKeyNames)
 	{
 		$connection = DB::connection($database)->getDoctrineConnection();
 		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('json', 'text');
@@ -48,7 +49,7 @@ class SchemaGenerator {
 		$this->database = $connection->getDatabase();
 
 		$this->schema = $connection->getSchemaManager();
-		$this->fieldGenerator = new FieldGenerator();
+		$this->fieldGenerator = new FieldGenerator($unusedTimestamps);
 		$this->foreignKeyGenerator = new ForeignKeyGenerator();
 
 		$this->ignoreIndexNames = $ignoreIndexNames;
