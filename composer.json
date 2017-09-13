@@ -25,5 +25,13 @@
 		"mockery/mockery": ">=0.9.0",
 		"illuminate/cache": ">=4.1.0",
 		"illuminate/console": ">=4.1.0"
+	},
+	"extra": {
+		"laravel": {
+			"providers": [
+				"Way\\Generators\\GeneratorsServiceProvider",
+				"Xethron\\MigrationsGenerator\\MigrationsGeneratorServiceProvider"
+			]
+		}
 	}
 }

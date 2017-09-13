@@ -20,7 +20,9 @@ The recommended way to install this is through composer:
 composer require --dev "xethron/migrations-generator"
 ```
 
-Edit `config/app.php` and add this to providers section:
+In Laravel 5.5 the service providers will automatically get registered. 
+
+In older versions of the framework edit `config/app.php` and add this to providers section:
 
 ```php
 Way\Generators\GeneratorsServiceProvider::class,
