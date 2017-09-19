@@ -129,6 +129,16 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	}
 
 	/**
+	 * Execute the console command. Added for Laravel 5.5
+	 *
+	 * @return void
+	 */
+	public function handle()
+	{
+		$this->fire();
+	}
+
+    /**
 	 * Execute the console command.
 	 *
 	 * @return void
@@ -231,7 +241,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 			$this->table = $table;
 			$this->migrationName = 'create_'. $this->table .'_table';
 			$this->fields = $this->schemaGenerator->getFields( $this->table );
-			
+
 			$this->generate();
 		}
 	}
