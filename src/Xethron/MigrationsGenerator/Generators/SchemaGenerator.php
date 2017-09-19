@@ -44,6 +44,13 @@ class SchemaGenerator {
 		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('jsonb', 'text');
 		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
 		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('bit', 'boolean');
+		
+		// Postgres types
+		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('_text', 'text');
+		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('_int4', 'integer');
+		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('_numeric', 'float');
+		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('cidr', 'string');
+		$connection->getDatabasePlatform()->registerDoctrineTypeMapping('inet', 'string');
 
 		$this->database = $connection->getDatabase();
 
