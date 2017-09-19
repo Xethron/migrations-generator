@@ -143,7 +143,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	 *
 	 * @return void
 	 */
-	public function fire()
+	public function handle()
 	{
 		$this->info( 'Using connection: '. $this->option( 'connection' ) ."\n" );
         if ($this->option('connection') !== $this->config->get('database.default')) {
