@@ -21,6 +21,19 @@ class FieldGenerator {
 	 */
 	protected $database;
 
+    /**
+     * @var bool
+     */
+	private $unusedTimestamps;
+
+    /**
+     * @param bool $unusedTimestamps
+     */
+    public function __construct($unusedTimestamps)
+    {
+        $this->unusedTimestamps = $unusedTimestamps;
+    }
+
 	/**
 	 * Create array of all the fields for a table
 	 *
@@ -124,10 +137,10 @@ class FieldGenerator {
 					$nullable = false;
 					$type = 'softDeletes';
 					$name = '';
-				} elseif ($name == 'created_at' and isset($fields['updated_at'])) {
+				} elseif (($name == 'created_at' and isset($fields['updated_at'])) and !$this->unusedTimestamps) {
 					$fields['updated_at'] = ['field' => '', 'type' => 'timestamps'];
 					continue;
-				} elseif ($name == 'updated_at' and isset($fields['created_at'])) {
+				} elseif (($name == 'updated_at' and isset($fields['created_at'])) and !$this->unusedTimestamps) {
 					$fields['created_at'] = ['field' => '', 'type' => 'timestamps'];
 					continue;
 				}
