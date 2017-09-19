@@ -59,7 +59,12 @@ class IndexGenerator {
 		}
 		$array = ['type' => $type, 'name' => null, 'columns' => $index->getColumns()];
 
-		if ( ! $this->ignoreIndexNames and ! $this->isDefaultIndexName($table, $index->getName(), $type, $index->getColumns())) {
+        // When index is primary the index name is always 'PRIMARY', then is not necessary to check isDefaultIndexName.
+        // If you don't set index name, try to make a index identifier joining (implode) all fields of the key
+        // and if this field is bigger than 64 characters it fail
+        if ($index->isPrimary()) {
+            $array['name'] = $table.'_pk';
+        } elseif ( ! $this->ignoreIndexNames and ! $this->isDefaultIndexName($table, $index->getName(), $type, $index->getColumns())) {
 			// Sent Index name to exclude spaces
 			$array['name'] = str_replace(' ', '', $index->getName());
 		}
