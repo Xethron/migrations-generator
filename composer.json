@@ -1,37 +1,43 @@
 {
-	"name": "xethron/migrations-generator",
-	"description": "Generates Laravel Migrations from an existing database",
-	"keywords": ["laravel", "migration", "generator", "migrations", "artisan"],
-	"license": "MIT",
-	"authors": [
-		{
-			"name": "Bernhard Breytenbach",
-			"email": "bernhard@coffeecode.co.za"
-		}
-	],
-	"require": {
-		"php": ">=5.4.0",
-		"illuminate/support": ">=4.1",
-		"xethron/laravel-4-generators": "~3.1.0",
-		"doctrine/dbal": "~2.4"
-	},
-	"autoload": {
-		"psr-0": {
-			"Xethron\\MigrationsGenerator": "src/"
-		}
-	},
-	"require-dev": {
-		"phpunit/phpunit": ">=4.0.0",
-		"mockery/mockery": ">=0.9.0",
-		"illuminate/cache": ">=4.1.0",
-		"illuminate/console": ">=4.1.0"
-	},
-	"extra": {
-		"laravel": {
-			"providers": [
-				"Way\\Generators\\GeneratorsServiceProvider",
-				"Xethron\\MigrationsGenerator\\MigrationsGeneratorServiceProvider"
-			]
-		}
-	}
+    "name": "xethron/migrations-generator",
+    "description": "Generates Laravel Migrations from an existing database",
+    "keywords": [
+        "laravel",
+        "migration",
+        "generator",
+        "migrations",
+        "artisan"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bernhard Breytenbach",
+            "email": "bernhard@coffeecode.co.za"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": ">=4.1",
+        "xethron/laravel-4-generators": "~3.1.0",
+        "doctrine/dbal": "~2.4"
+    },
+    "autoload": {
+        "psr-0": {
+            "Xethron\\MigrationsGenerator": "src/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": ">=4.0.0",
+        "mockery/mockery": ">=0.9.0",
+        "illuminate/cache": ">=4.1.0",
+        "illuminate/console": ">=4.1.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Way\\Generators\\GeneratorsServiceProvider",
+                "Xethron\\MigrationsGenerator\\MigrationsGeneratorServiceProvider"
+            ]
+        }
+    }
 }
