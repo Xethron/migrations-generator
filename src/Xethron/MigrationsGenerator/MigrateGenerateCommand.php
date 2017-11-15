@@ -1,5 +1,7 @@
 <?php namespace Xethron\MigrationsGenerator;
 
+use File;
+use Illuminate\Support\Collection;
 use Way\Generators\Commands\GeneratorCommand;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
@@ -106,6 +108,28 @@ class MigrateGenerateCommand extends GeneratorCommand {
     protected $connection = null;
 
     /**
+     * For create migrations so they all do not have the same date
+     * @var int
+     */
+    protected $secondCount = 1;
+
+    /**
+     * Array of ForeignKeys to create in a new Migration
+     * Namely: Foreign Keys
+     * @var array
+     */
+    protected $foreignKeys = array();
+
+    /** @var bool // separate or combine the foreign keys to the table create */
+    protected $separateForeignKeysCreation = true;
+
+    /** @var bool // empty the existing migrations */
+    protected $clearAllExistingMigrations = false;
+
+    /** @var bool // should we check for table dependencies via foreign keys */
+    protected $checkForTableDependencies = false;
+
+    /**
 	 * @param \Way\Generators\Generator  $generator
 	 * @param \Way\Generators\Filesystem\Filesystem  $file
 	 * @param \Way\Generators\Compilers\TemplateCompiler  $compiler
@@ -168,6 +192,9 @@ class MigrateGenerateCommand extends GeneratorCommand {
 
 		if (!$this->option( 'no-interaction' )) {
 			$this->log = $this->askYn('Do you want to log these migrations in the migrations table?');
+            $this->checkForTableDependencies = $this->askYn('Do you want to load tables by table dependencies?');
+            $this->separateForeignKeysCreation = $this->askYn('Do you want to separate the foreign keys creation into their own migrations?');
+            $this->clearAllExistingMigrations = $this->askYn('Do you want to clear all existing migrations?');
 		}
 
 		if ( $this->log ) {
@@ -180,14 +207,39 @@ class MigrateGenerateCommand extends GeneratorCommand {
 			$this->batch = $this->askNumeric( 'Next Batch Number is: '. $batch .'. We recommend using Batch Number 0 so that it becomes the "first" migration', 0 );
 		}
 
-		$this->info( "Setting up Tables and Index Migrations" );
-		$this->datePrefix = date( 'Y_m_d_His' );
-		$this->generateTablesAndIndices( $tables );
-		$this->info( "\nSetting up Foreign Key Migrations\n" );
-		$this->datePrefix = date( 'Y_m_d_His', strtotime( '+1 second' ) );
-		$this->generateForeignKeys( $tables );
-		$this->info( "\nFinished!\n" );
+        $this->clearAllMigrations();
+        $this->info( $this->separateForeignKeysCreation ? "Setting up Tables and Index Migrations" : "Setting up Tables, Index, and Foreign Key Migrations");
+        $this->datePrefix = date( 'Y_m_d_His' );
+        $this->generateTablesAndIndices( $tables );
+
+        if ($this->separateForeignKeysCreation) {
+            $this->info( "Setting up Foreign Key Migrations" );
+            $this->generateForeignKeys( $tables );
+        }
+
+        $this->info( "\nFinished!\n" );
 	}
+
+    /**
+     * Make sure the migration date string is always different and sequential
+     * @return false|string
+     */
+    protected function getDatePrefix()
+    {
+        $this->secondCount++;
+        return date( 'Y_m_d_His', strtotime( "+{$this->secondCount} second" ) );
+    }
+
+    /**
+     * Check if we should clear all existing migrations, and if so, remove them
+     */
+    protected function clearAllMigrations()
+    {
+        if ($this->clearAllExistingMigrations) {
+            $directory = base_path() . '/database/migrations/';
+            File::cleanDirectory($directory);
+        }
+    }
 
 	/**
 	 * Ask for user input: Yes/No
@@ -235,16 +287,69 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	 */
 	protected function generateTablesAndIndices( array $tables )
 	{
-		$this->method = 'create';
+        if ($this->checkForTableDependencies) {
+            $this->generateTablesAndIndicesLookingForTableDependencies($tables);
+        } else {
+            $this->method = 'create';
 
-		foreach ( $tables as $table ) {
-			$this->table = $table;
-			$this->migrationName = 'create_'. $this->table .'_table';
-			$this->fields = $this->schemaGenerator->getFields( $this->table );
+            foreach ( $tables as $table ) {
+                $this->table = $table;
+                $this->migrationName = 'create_'. $this->table .'_table';
+                $this->fields = $this->schemaGenerator->getFields( $this->table );
 
-			$this->generate();
-		}
+                $this->generate();
+            }
+        }
 	}
+
+    /**
+     * Generate tables and index migrations while checking for table dependencies via foreign keys
+     *
+     * @param array $tables
+     */
+    protected function generateTablesAndIndicesLookingForTableDependencies( array $tables )
+    {
+        $this->method = 'create';
+
+        $tables = collect($tables);
+        $tablesWithFields = new Collection();
+
+        foreach ($tables as $table) {
+            $this->getDependencyTable($table, $tablesWithFields);
+        }
+
+        foreach ($tablesWithFields as $table => $fields) {
+            $this->table = $table;
+            $this->migrationName = 'create_'. $this->table .'_table';
+            $this->fields = $fields;
+
+            if (!$this->separateForeignKeysCreation) {
+                $this->foreignKeys = $this->schemaGenerator->getForeignKeyConstraints($this->table);
+            }
+
+            $this->generate();
+        }
+    }
+
+    /**
+     * @param $table
+     * @param Collection $tableWithFields
+     */
+    protected function getDependencyTable($table, Collection &$tableWithFields)
+    {
+        if (!$tableWithFields->has($table)) {
+            $fields = $this->schemaGenerator->getFields($table) ?: [];
+
+            foreach ($fields as $field => $info) {
+                if (substr($field, -3) === '_id') {
+                    $tableName = str_plural(substr($field, 0, -3));
+                    $this->getDependencyTable($tableName, $tableWithFields);
+                }
+            }
+
+            $tableWithFields->put($table, $fields);
+        }
+    }
 
 	/**
 	 * Generate foreign key migrations.
@@ -276,7 +381,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
 			parent::fire();
 
 			if ( $this->log ) {
-				$file = $this->datePrefix . '_' . $this->migrationName;
+				$file = $this->getDatePrefix() . '_' . $this->migrationName;
 				$this->repository->log($file, $this->batch);
 			}
 		}
@@ -297,38 +402,69 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	}
 
 	/**
-	 * Get the date prefix for the migration.
-	 *
-	 * @return string
-	 */
-	protected function getDatePrefix()
-	{
-		return $this->datePrefix;
-	}
-
-	/**
 	 * Fetch the template data
 	 *
 	 * @return array
 	 */
 	protected function getTemplateData()
 	{
-		if ( $this->method == 'create' ) {
-			$up = (new AddToTable($this->file, $this->compiler))->run($this->fields, $this->table, $this->connection, 'create');
-			$down = (new DroppedTable)->drop($this->table, $this->connection);
-		}
+        if (!$this->separateForeignKeysCreation) {
+            return $this->combineTableAndForeignKeys();
+        }
 
-		if ( $this->method == 'table' ) {
-			$up = (new AddForeignKeysToTable($this->file, $this->compiler))->run($this->fields, $this->table, $this->connection);
-			$down = (new RemoveForeignKeysFromTable($this->file, $this->compiler))->run($this->fields, $this->table, $this->connection);
-		}
-
-		return [
-			'CLASS' => ucwords(camel_case($this->migrationName)),
-			'UP'    => $up,
-			'DOWN'  => $down
-		];
+        return $this->separateTableAndForeignKeys();
 	}
+
+    /**
+     * Separate the foreign keys from create migrations
+     *
+     * @return array
+     */
+    protected function separateTableAndForeignKeys()
+    {
+        $up = '';
+        $down = '';
+
+        if ( $this->method == 'create' ) {
+            $up = (new AddToTable($this->file, $this->compiler))->run($this->fields, $this->table, $this->connection, 'create');
+            $down = (new DroppedTable)->drop($this->table, $this->connection);
+        }
+
+        if ( $this->method == 'table' ) {
+            $up = (new AddForeignKeysToTable($this->file, $this->compiler))->run($this->fields, $this->table, $this->connection);
+            $down = (new RemoveForeignKeysFromTable($this->file, $this->compiler))->run($this->fields, $this->table, $this->connection);
+        }
+
+        return [
+            'CLASS' => ucwords(camel_case($this->migrationName)),
+            'UP'    => $up,
+            'DOWN'  => $down
+        ];
+    }
+
+    /**
+     * Combine the table migrations and foreign key creations
+     *
+     * @return array
+     */
+    protected function combineTableAndForeignKeys()
+    {
+        $up = '';
+        $down = '';
+
+        if ( $this->method == 'create' ) {
+            $up .= (new AddToTable($this->file, $this->compiler))->run($this->fields, $this->table, $this->connection, 'create');
+            $up .= $this->foreignKeys ? PHP_EOL . PHP_EOL . "\t\t" . (new AddForeignKeysToTable($this->file, $this->compiler))->run($this->foreignKeys, $this->table, $this->connection) : '';
+            $down .= $this->foreignKeys ? (new RemoveForeignKeysFromTable($this->file, $this->compiler))->run($this->foreignKeys, $this->table, $this->connection) . PHP_EOL . PHP_EOL . "\t\t" : '';
+            $down .= (new DroppedTable)->drop($this->table, $this->connection);
+        }
+
+        return [
+            'CLASS' => ucwords(camel_case($this->migrationName)),
+            'UP'    => $up,
+            'DOWN'  => $down
+        ];
+    }
 
 	/**
 	 * Get path to template for generator
