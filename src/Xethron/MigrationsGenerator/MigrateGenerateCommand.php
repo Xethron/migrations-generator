@@ -318,7 +318,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
             $this->getDependencyTable($table, $tablesWithFields);
         }
 
-        foreach ( $tablesWithFields as $table => $fields) {
+        foreach ($tablesWithFields as $table => $fields) {
             $this->table = $table;
             $this->migrationName = 'create_'. $this->table .'_table';
             $this->fields = $fields;
