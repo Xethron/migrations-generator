@@ -338,7 +338,7 @@ class MigrateGenerateCommand extends GeneratorCommand {
     protected function getDependencyTable($table, Collection &$tableWithFields)
     {
         if (!$tableWithFields->has($table)) {
-            $fields = $this->schemaGenerator->getFields($table);
+            $fields = $this->schemaGenerator->getFields($table) ?: [];
 
             foreach ($fields as $field => $info) {
                 if (substr($field, -3) === '_id') {
