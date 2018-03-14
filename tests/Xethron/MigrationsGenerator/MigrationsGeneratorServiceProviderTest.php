@@ -161,7 +161,7 @@ class MigrationsGeneratorServiceProviderTest extends TestCase {
 
   protected function get_repository_mock()
   {
-    return Mockery::mock(Repository::class)
+    return Mockery::mock('\Illuminate\Contracts\Config\Repository')
       ->shouldAllowMockingProtectedMethods()
       ->makePartial();
   }
