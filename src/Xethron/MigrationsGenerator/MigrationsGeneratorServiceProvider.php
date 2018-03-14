@@ -29,13 +29,15 @@ class MigrationsGeneratorServiceProvider extends ServiceProvider {
                 );
             });
 
-		$this->commands('migration.generate');
 
-		// Bind the Repository Interface to $app['migrations.repository']
-		$this->app->bind('Illuminate\Database\Migrations\MigrationRepositoryInterface', function($app) {
-			return $app['migration.repository'];
-		});
-	}
+        $this->commands('migration.generate');
+
+        // Bind the Repository Interface to $app['migrations.repository']
+        $this->app->bind('Illuminate\Database\Migrations\MigrationRepositoryInterface', function($app) {
+            return $app['migration.repository'];
+        });
+
+    }
 
 	/**
 	 * Bootstrap the application events.

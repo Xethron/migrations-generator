@@ -1,9 +1,9 @@
 <?php namespace Xethron\MigrationsGenerator;
 
 use Mockery;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class MigrationsGeneratorTest extends PHPUnit_Framework_TestCase {
+class MigrationsGeneratorTest extends TestCase {
 
   public function tearDown()
   {
@@ -15,6 +15,6 @@ class MigrationsGeneratorTest extends PHPUnit_Framework_TestCase {
   */
   public function registers_migrations_generator()
   {
-    
+    $this->markTestSkipped('No tests implemented yet.');
   }
 }
