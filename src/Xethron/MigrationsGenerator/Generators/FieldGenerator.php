@@ -124,10 +124,12 @@ class FieldGenerator {
 					$nullable = false;
 					$type = 'softDeletes';
 					$name = '';
-				} elseif ($name == 'created_at' and isset($fields['updated_at'])) {
+				} elseif ($name == 'created_at' and isset($fields['updated_at']) and empty($index)
+                    and !in_array("index", $fields['updated_at']['decorators'])) {
 					$fields['updated_at'] = ['field' => '', 'type' => 'timestamps'];
 					continue;
-				} elseif ($name == 'updated_at' and isset($fields['created_at'])) {
+				} elseif ($name == 'updated_at' and isset($fields['created_at']) and empty($index)
+                    and !in_array("index", $fields['created_at']['decorators'])) {
 					$fields['created_at'] = ['field' => '', 'type' => 'timestamps'];
 					continue;
 				}
