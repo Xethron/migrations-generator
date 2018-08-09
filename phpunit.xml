@@ -8,7 +8,6 @@
    convertWarningsToExceptions="true"
    processIsolation="false"
    stopOnFailure="false"
-   syntaxCheck="false"
    stderr="true"
 >
   <testsuites>
@@ -22,6 +21,6 @@
     </whitelist>
   </filter>
   <logging>
-    <log type="coverage-html" target="report/" charset="UTF-8" yui="true" />
+    <log type="coverage-html" target="report/" />
   </logging>
 </phpunit>

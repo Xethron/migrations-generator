@@ -1,9 +1,10 @@
 <?php namespace Xethron\MigrationsGenerator;
 
+use Illuminate\Contracts\Config\Repository;
 use Mockery;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class MigrationsGeneratorServiceProviderTest extends PHPUnit_Framework_TestCase {
+class MigrationsGeneratorServiceProviderTest extends TestCase {
   
   public function tearDown()
   {
@@ -24,19 +25,11 @@ class MigrationsGeneratorServiceProviderTest extends PHPUnit_Framework_TestCase 
         'Illuminate\Database\Migrations\MigrationRepositoryInterface',
         Mockery::any()
       );
-      
+
     $app_mock
-      ->shouldReceive('bind')
+      ->shouldReceive('singleton')
       ->atLeast()->once()
-      ->with(
-        'migration.generate',
-        Mockery::any()
-      );
-      
-    $app_mock
-      ->shouldReceive('share')
-      ->atLeast()->once()
-      ->with(
+      ->with('migration.generate',
         Mockery::on(function($callback) {
           $mock = $this->get_app_mock();
 
@@ -99,7 +92,10 @@ class MigrationsGeneratorServiceProviderTest extends PHPUnit_Framework_TestCase 
 
     $service_provider_mock
       ->shouldReceive('commands')
-      ->atLeast()->once();
+      ->atLeast()->once()
+        ->with(
+            'migration.generate'
+        );
 
     $service_provider_mock->register();
   }
@@ -165,7 +161,7 @@ class MigrationsGeneratorServiceProviderTest extends PHPUnit_Framework_TestCase 
 
   protected function get_repository_mock()
   {
-    return Mockery::mock('Illuminate\Config\Repository')
+    return Mockery::mock('\Illuminate\Contracts\Config\Repository')
       ->shouldAllowMockingProtectedMethods()
       ->makePartial();
   }

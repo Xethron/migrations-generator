@@ -21,7 +21,8 @@ abstract class Table extends \Way\Generators\Syntax\Table{
      */
 	public function run(array $fields, $table, $connection = null, $method = 'table')
 	{
-		$table = substr($table, strlen(\DB::getTablePrefix()));
+	    $prefix = is_null($connection) ? \DB::getTablePrefix() : \DB::connection($connection)->getTablePrefix();
+		$table = substr($table, strlen($prefix));
 		$this->table = $table;
         if (!is_null($connection)) $method = 'connection(\''.$connection.'\')->'.$method;
 		$compiled = $this->compiler->compile($this->getTemplate(), ['table'=>$table,'method'=>$method]);
