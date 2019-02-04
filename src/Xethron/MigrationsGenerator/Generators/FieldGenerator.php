@@ -55,7 +55,7 @@ class FieldGenerator {
 				->where('table_schema', $this->database)
 				->where('table_name', $table)
 				->where('data_type', 'enum')
-				->get(['column_name','column_type']);
+				->get(['column_name as column_name','column_type as column_type']);
 			if ($result)
 				return $result;
 			else
