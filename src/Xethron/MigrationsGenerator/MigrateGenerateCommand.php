@@ -61,13 +61,13 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	 * Namely: Columns, Indexes and Foreign Keys
 	 * @var array
 	 */
-	protected $fields = array();
+	protected $fields = [];
 
 	/**
 	 * List of Migrations that has been done
 	 * @var array
 	 */
-	protected $migrations = array();
+	protected $migrations = [];
 
 	/**
 	 * @var bool

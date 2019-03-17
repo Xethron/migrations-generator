@@ -36,7 +36,7 @@ abstract class Table extends \Way\Generators\Syntax\Table{
 	 */
 	protected function getItems(array $items)
 	{
-		$result = array();
+		$result = [];
 		foreach($items as $item) {
 			$result[] = $this->getItem($item);
 		}
