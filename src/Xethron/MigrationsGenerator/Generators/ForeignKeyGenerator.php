@@ -23,7 +23,7 @@ class ForeignKeyGenerator {
 
 		$foreignKeys = $schema->listTableForeignKeys($table);
 
-		if ( empty( $foreignKeys ) ) return array();
+		if ( empty( $foreignKeys ) ) return [];
 
 		foreach ( $foreignKeys as $foreignKey ) {
 			$fields[] = [

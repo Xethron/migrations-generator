@@ -73,8 +73,8 @@ class FieldGenerator {
 	protected function setEnum(array $fields, $table)
 	{
 		foreach ($this->getEnum($table) as $column) {
-			$fields[$column->column_name]['type'] = 'enum';
-			$fields[$column->column_name]['args'] = str_replace('enum(', 'array(', $column->column_type);
+			$fields[$column->COLUMN_NAME]['type'] = 'enum';
+			$fields[$column->COLUMN_NAME]['args'] = str_replace('enum(', 'array(', $column->COLUMN_TYPE);
 		}
 		return $fields;
 	}
@@ -86,7 +86,7 @@ class FieldGenerator {
 	 */
 	protected function getFields($columns, IndexGenerator $indexGenerator)
 	{
-		$fields = array();
+		$fields = [];
 		foreach ($columns as $column) {
 			$name = $column->getName();
 			$type = $column->getType()->getName();
@@ -242,7 +242,7 @@ class FieldGenerator {
 	 */
 	protected function getMultiFieldIndexes(IndexGenerator $indexGenerator)
 	{
-		$indexes = array();
+		$indexes = [];
 		foreach ($indexGenerator->getMultiFieldIndexes() as $index) {
 			$indexArray = [
 				'field' => $index->columns,
