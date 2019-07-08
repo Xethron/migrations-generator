@@ -73,8 +73,16 @@ class FieldGenerator {
 	protected function setEnum(array $fields, $table)
 	{
 		foreach ($this->getEnum($table) as $column) {
-			$fields[$column->column_name]['type'] = 'enum';
-			$fields[$column->column_name]['args'] = str_replace('enum(', 'array(', $column->column_type);
+			$column_name = isset($column->column_name)
+				? $column->column_name
+				: $column->COLUMN_NAME;
+
+		    	$column_type = isset($column->column_type)
+				? $column->column_type
+				: $column->COLUMN_TYPE;
+
+			$fields[$column_name]['type'] = 'enum';
+			$fields[$column_name]['args'] = str_replace('enum(', 'array(', $column_type);
 		}
 		return $fields;
 	}
