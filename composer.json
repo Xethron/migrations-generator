@@ -11,7 +11,7 @@
 	],
 	"require": {
 		"php": ">=5.4.0",
-		"illuminate/support": ">=4.1",
+		"illuminate/support": ">=4.1|^6.0",
 		"xethron/laravel-4-generators": "~3.1.0",
 		"doctrine/dbal": "~2.4"
 	},
@@ -21,7 +21,7 @@
 		}
 	},
 	"require-dev": {
-		"phpunit/phpunit": ">=4.0.0",
+		"phpunit/phpunit": ">=4.0.0|^8.0",
 		"mockery/mockery": ">=0.9.0",
 		"illuminate/cache": ">=4.1.0",
 		"illuminate/console": ">=4.1.0"
