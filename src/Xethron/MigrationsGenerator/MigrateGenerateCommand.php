@@ -106,6 +106,11 @@ class MigrateGenerateCommand extends GeneratorCommand {
     protected $connection = null;
 
     /**
+     * @var bool
+     */
+    protected $ignoreCreatedMigration = false;
+
+    /**
 	 * @param \Way\Generators\Generator  $generator
 	 * @param \Way\Generators\Filesystem\Filesystem  $file
 	 * @param \Way\Generators\Compilers\TemplateCompiler  $compiler
@@ -180,6 +185,10 @@ class MigrateGenerateCommand extends GeneratorCommand {
 			$this->batch = $this->askNumeric( 'Next Batch Number is: '. $batch .'. We recommend using Batch Number 0 so that it becomes the "first" migration', 0 );
 		}
 
+        if($this->hasOption('ignore-created-migration')) {
+            $this->ignoreCreatedMigration = true;
+        }
+
 		$this->info( "Setting up Tables and Index Migrations" );
 		$this->datePrefix = date( 'Y_m_d_His' );
 		$this->generateTablesAndIndices( $tables );
@@ -240,11 +249,57 @@ class MigrateGenerateCommand extends GeneratorCommand {
 		foreach ( $tables as $table ) {
 			$this->table = $table;
 			$this->migrationName = 'create_'. $this->table .'_table';
+
+            if($this->ignoreCreatedMigration && $this->migrationExist($this->table)) {
+                $this->info( "Migration $this->migrationName already created: Skipping..." );
+                continue;
+            }
+
 			$this->fields = $this->schemaGenerator->getFields( $this->table );
 
 			$this->generate();
 		}
 	}
+
+    /**Return a substring between 2 strings
+     * @param $string
+     * @param $start
+     * @param $end
+     * @param bool $trim
+     * @return false|string
+     */
+    public function getStringBetween($string, $start, $end, $trim = true) {
+        $string = ' ' . $string;
+        $ini = strpos($string, $start);
+        if ($ini == 0) return '';
+        $ini += strlen($start);
+        $len = strpos($string, $end, $ini) - $ini;
+        $output = substr($string, $ini, $len);
+        return ($trim) ? trim(strip_tags($output)) : $output;
+    }
+
+    /**Check if migration for table already exists
+     * @param $table
+     * @param string $prefix
+     * @param string $suffix
+     * @return bool
+     */
+    protected function migrationExist($table, $prefix = 'create_', $suffix = '_table')
+    {
+        $exists = false;
+        $path = $this->getPathByOptionOrConfig( 'path', 'migration_target_path' );
+        $files = scandir($path);
+
+        foreach ($files as $file)
+        {
+            if($this->getStringBetween($file, $prefix, $suffix) == $table) {
+                $exists = true;
+                break;
+            }
+        }
+
+        return $exists;
+    }
 
 	/**
 	 * Generate foreign key migrations.
@@ -255,10 +310,19 @@ class MigrateGenerateCommand extends GeneratorCommand {
 	protected function generateForeignKeys( array $tables )
 	{
 		$this->method = 'table';
+        $prefix = 'add_foreign_keys_to_';
+        $suffix = '_table';
 
 		foreach ( $tables as $table ) {
 			$this->table = $table;
 			$this->migrationName = 'add_foreign_keys_to_'. $this->table .'_table';
+
+            $this->migrationName = $prefix . $this->table . $suffix;
+            if($this->ignoreCreatedMigration && $this->migrationExist($this->table, $prefix, $suffix)) {
+                $this->info( "Migration $this->migrationName already created: Skipping..." );
+                continue;
+            }
+
 			$this->fields = $this->schemaGenerator->getForeignKeyConstraints( $this->table );
 
 			$this->generate();
@@ -363,7 +427,8 @@ class MigrateGenerateCommand extends GeneratorCommand {
 			['connection', 'c', InputOption::VALUE_OPTIONAL, 'The database connection to use.', $this->config->get( 'database.default' )],
 			['tables', 't', InputOption::VALUE_OPTIONAL, 'A list of Tables you wish to Generate Migrations for separated by a comma: users,posts,comments'],
 			['ignore', 'i', InputOption::VALUE_OPTIONAL, 'A list of Tables you wish to ignore, separated by a comma: users,posts,comments' ],
-			['path', 'p', InputOption::VALUE_OPTIONAL, 'Where should the file be created?'],
+            ['ignore-created-migration', 'icm', InputOption::VALUE_OPTIONAL, 'Flag to ignore migrations already created' ],
+            ['path', 'p', InputOption::VALUE_OPTIONAL, 'Where should the file be created?'],
 			['templatePath', 'tp', InputOption::VALUE_OPTIONAL, 'The location of the template for this generator'],
 			['defaultIndexNames', null, InputOption::VALUE_NONE, 'Don\'t use db index names for migrations'],
 			['defaultFKNames', null, InputOption::VALUE_NONE, 'Don\'t use db foreign key names for migrations'],
