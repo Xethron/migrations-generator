@@ -67,7 +67,9 @@ class SchemaGenerator {
 	 */
 	public function getTables()
 	{
-		return $this->schema->listTableNames();
+		$tableNames = $this->schema->listTableNames();
+		$tableNames = array_map(function($tableName){return trim($tableName,'"');}, $tableNames);
+		return $tableNames;
 	}
 
 	public function getFields($table)
